@@ -19,6 +19,7 @@ class PDF_Manage():
         self.doc.set_parser(self.parser)
         self.doc.initialize()
         pass
+    
     def __del__(self):
         self.fp.close()
 
