@@ -1,0 +1,2 @@
+# Some Type of PaperManager
+-------------
