@@ -33,3 +33,8 @@ def show_books(request):
         response['error_num'] = 1
 
     return JsonResponse(response)
+
+def getTagList(request):
+    response = {}
+    try:
+        
