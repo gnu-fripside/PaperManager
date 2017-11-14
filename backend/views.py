@@ -51,11 +51,11 @@ def getFileList(request):
 # @require_http_methods(["GET"])
 def register(request):
     response = {"error_num": 0}
-    user_name = request.GET.get('user_name')
-    user_password = request.GET.get('user_password')
+    user_name = request.GET.get('userId')
+    user_password = request.GET.get('password')
     if len(Users.objects.filter(user_name=user_name)) > 0:
         response["error_num"] += 1
-        response["msg"] = "The user had registered!"
+        response["msg"] = "The user has been registered!"
     else:
         user = Users.objects.create(user_name=user_name, user_password=user_password)
         user.save()
@@ -63,11 +63,11 @@ def register(request):
 
 def login(request):
     response = {"error_num": 0}
-    user_name = request.GET.get('user_name')
-    user_password = request.GET.get('user_password')
+    user_name = request.GET.get('userId')
+    user_password = request.GET.get('password')
     try:
-        user = Users.objects.filter(user_name=user_name)
-        if user_password != user.user_password:
+        user = Users.objects.get(user_name=user_name).__dict__
+        if user_password != user['user_password']:
             response["error_num"] += 1
             response["msg"] = "The password is wrong!"
     except Exception as e:
