@@ -1,5 +1,4 @@
-.idea/
-.git/
-.gitignore
+.*/
 resources/
 *.pyc
+__pycache__

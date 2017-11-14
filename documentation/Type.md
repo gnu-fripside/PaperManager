@@ -1,2 +1,2 @@
-# Some Type of PaperManager
+# Some Types of PaperManager
 -------------

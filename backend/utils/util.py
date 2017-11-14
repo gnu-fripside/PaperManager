@@ -1,7 +1,7 @@
 # encoding:utf-8
-from utils.TagTree import TagTree
-from utils.ArxivScrapy import paperDown
-from utils.PaperNode import PaperNode
+from .TagTree import TagTree
+from .ArxivScrapy import paperDown
+from .PaperNode import PaperNode
 import os
 
 
@@ -31,7 +31,7 @@ def AddTag(userid, tag, parentTag):
 
 def getTagList(userid, currentPath):
     result = {}
-    rootDir = "../resource/tags/" + userid + "/"
+    rootDir = "./resource/tags/" + userid + "/"
     rootDir += "/".join(currentPath.split("."))
     try:
         sonDir = os.listdir(rootDir)
@@ -58,7 +58,7 @@ def getTagList(userid, currentPath):
 
 def getFileList(userid, currentPath):
     result = {}
-    rootDir = "../resource/tags/" + userid + "/"
+    rootDir = "./resource/tags/" + userid + "/"
     rootDir += "/".join(currentPath.split("."))
     try:
         sonDir = os.listdir(rootDir)
