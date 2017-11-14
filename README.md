@@ -6,16 +6,16 @@
 - Install node.js and npm in your environment. If you are in mainland China, you need to install [cnpm](http://npm.taobao.org/) of Taobao.Inc.. If you use cnpm, the 'npm' in commands follow should be replaced by 'cnpm'.
 - Goto the path of frontend (PaperManager/frontend/) and build the frontend.
 
-
+<pre><code>
     npm install
     npm run build
-
+</code></pre>
 
 - Goto previous path (PaperManager/) and start Django.
 
-
-    python manage.py runserver 8080
-
+<pre><code>
+    python3 manage.py runserver 8080
+</code></pre>
 
 ---
 
