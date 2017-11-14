@@ -1,7 +1,7 @@
 # encoding:utf-8
-from utils.TagTree import TagTree
-from utils.ArxivScrapy import paperDown
-from utils.PaperNode import PaperNode
+from .TagTree import TagTree
+from .ArxivScrapy import paperDown
+from .PaperNode import PaperNode
 import os
 
 
@@ -31,10 +31,11 @@ def AddTag(userid, tag, parentTag):
 
 def getTagList(userid, currentPath):
     result = {}
-    rootDir = "../resource/tags/" + userid + "/"
+    rootDir = "./resource/tags/" + userid + "/"
     rootDir += "/".join(currentPath.split("."))
     try:
         sonDir = os.listdir(rootDir)
+        sonDir = [item for item in sonDir if item[-5:] != '.json']
     except FileNotFoundError:
         result['error_num'] = 2
         result['msg'] = "fail, no such directory"
@@ -58,14 +59,14 @@ def getTagList(userid, currentPath):
 
 def getFileList(userid, currentPath):
     result = {}
-    rootDir = "../resource/tags/" + userid + "/"
+    rootDir = "./resource/tags/" + userid + "/"
     rootDir += "/".join(currentPath.split("."))
     try:
         sonDir = os.listdir(rootDir)
     except FileNotFoundError:
         result['error_num'] = 2
         result['msg'] = "fail, no such directory"
-        result['tagList'] = []
+        result['fileList'] = []
         return result
     try:
         sonDir.remove('.DS_Store')
@@ -90,8 +91,8 @@ if __name__ == "__main__":
     #print(getTagList("10010", "manga.lovelive"))
     #print(getTagList("10010", "manga.ddlc"))
     #print(getTagList("10010", "manga.white_album"))
-    print(getFileList("10032","cs.ai"))
-    print(getFileList("10032", "cs.se"))
-    print(getFileList("10032", "cs.ai.nlp"))
-    print(getFileList("10033", "cs"))
+    print(getTagList("10032","cs.ai"))
+    print(getTagList("10032", "cs.se"))
+    print(getTagList("10032", "cs"))
+    print(getTagList("10033", "cs"))
 

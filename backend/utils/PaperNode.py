@@ -59,7 +59,7 @@ class PaperNode:
         dictPaperNode["tags"] = {}
         for i in range(len(self.tags)):
             dictPaperNode["tags"][str(i + 1)] = self.tags[i]
-        dictPaperNode["sourxe"] = self.source
+        dictPaperNode["source"] = self.source
         dictPaperNode["notes"] = self.notes
         dictPaperNode["filePath"] = self.filePath
         dictPaperNode["hash"] = self.hash

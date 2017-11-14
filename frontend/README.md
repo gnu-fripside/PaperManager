@@ -1,6 +1,6 @@
 # frontend
 
-> Frontend of PaperManager based on Vue.js
+> Frontend of PaperManager
 
 ## Build Setup
 
