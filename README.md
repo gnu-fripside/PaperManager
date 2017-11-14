@@ -10,6 +10,7 @@
     npm install
     npm run build
 
+
 - Goto previous path (PaperManager/) and start Django.
 
 
