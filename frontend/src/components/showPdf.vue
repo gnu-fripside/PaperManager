@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="showPdf">
     <input type="checkbox" v-model="show">
     <select v-model="src" style="width: 30em">
       <option v-for="item in pdfList" :value="item" v-text="item"></option>
@@ -18,6 +18,7 @@
   import pdf from 'vue-pdf'
 
   export default {
+    name: "showPdf",
     components: {
       pdf: pdf
     },
@@ -42,11 +43,9 @@
     },
     methods: {
       password: function(updatePassword, reason) {
-
         updatePassword(prompt('password is "test"'));
       },
       error: function(err) {
-
         console.log(err);
       }
     }

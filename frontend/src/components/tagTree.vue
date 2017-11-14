@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="tagTree">
     <button @click="backward">Back</button>
     <ul v-for="tag in tagList">
       <li @click="nextTag(tag)">{{ tag }}</li>
