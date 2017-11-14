@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.http import JsonResponse
 from django.core import serializers
 from .utils import util
-from .models import Book
+from .models import Book, Users
 import json
 
 
@@ -20,6 +20,7 @@ def add_book(request):
         response['error_num'] = 1
 
     return JsonResponse(response)
+
 
 # @require_http_methods(["GET"])
 def show_books(request):
@@ -46,3 +47,34 @@ def getFileList(request):
     currentPath = request.GET.get('currentPath')
     response = util.getFileList(userId, currentPath)
     return JsonResponse(response)
+
+# @require_http_methods(["GET"])
+def register(request):
+    response = {"error_num": 0}
+    user_name = request.GET.get('user_name')
+    user_password = request.GET.get('user_password')
+    if len(Users.objects.filter(user_name=user_name)) > 0:
+        response["error_num"] += 1
+        response["msg"] = "The user had registered!"
+    else:
+        user = Users.objects.create(user_name=user_name, user_password=user_password)
+        user.save()
+    return JsonResponse(response)
+
+def login(request):
+    response = {"error_num": 0}
+    user_name = request.GET.get('user_name')
+    user_password = request.GET.get('user_password')
+    try:
+        user = Users.objects.filter(user_name=user_name)
+        if user_password != user.user_password:
+            response["error_num"] += 1
+            response["msg"] = "The password is wrong!"
+    except Exception as e:
+        response["msg"] = str(e)
+        response["error_num"] += 1
+    res = JsonResponse(response)
+    if response['error_num'] == 0:
+        res.set_cookie('user_name', user_name, 360001)
+    return res
+

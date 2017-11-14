@@ -1,5 +1,3 @@
-.idea/
-.git/
-.gitignore
+.*/
 resources/
 *.pyc
