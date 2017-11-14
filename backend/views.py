@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from django.http import JsonResponse
 from django.core import serializers
+from .utils import util
 from .models import Book
 import json
 
@@ -35,6 +36,13 @@ def show_books(request):
     return JsonResponse(response)
 
 def getTagList(request):
-    response = {}
-    try:
-        
+    userId = request.GET.get('userId')
+    currentPath = request.GET.get('currentPath')
+    response = util.getTagList(userId, currentPath)
+    return JsonResponse(response)
+
+def getFileList(request):
+    userId = request.GET.get('userId')
+    currentPath = request.GET.get('currentPath')
+    response = util.getFileList(userId, currentPath)
+    return JsonResponse(response)
