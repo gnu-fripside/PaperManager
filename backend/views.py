@@ -63,4 +63,7 @@ def login(request):
     except Exception as e:
         response["msg"] = str(e)
         response["error_num"] += 1
-    return JsonResponse(response)
+    res = JsonResponse(response)
+    if response['error_num'] == 0:
+        res.set_cookie('user_name', user_name, 360001)
+    return res
