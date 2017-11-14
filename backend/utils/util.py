@@ -35,6 +35,7 @@ def getTagList(userid, currentPath):
     rootDir += "/".join(currentPath.split("."))
     try:
         sonDir = os.listdir(rootDir)
+        sonDir = [item for item in sonDir if item[-5:] != '.json']
     except FileNotFoundError:
         result['error_num'] = 2
         result['msg'] = "fail, no such directory"
@@ -65,7 +66,7 @@ def getFileList(userid, currentPath):
     except FileNotFoundError:
         result['error_num'] = 2
         result['msg'] = "fail, no such directory"
-        result['tagList'] = []
+        result['fileList'] = []
         return result
     try:
         sonDir.remove('.DS_Store')
@@ -90,8 +91,8 @@ if __name__ == "__main__":
     #print(getTagList("10010", "manga.lovelive"))
     #print(getTagList("10010", "manga.ddlc"))
     #print(getTagList("10010", "manga.white_album"))
-    print(getFileList("10032","cs.ai"))
-    print(getFileList("10032", "cs.se"))
-    print(getFileList("10032", "cs.ai.nlp"))
-    print(getFileList("10033", "cs"))
+    print(getTagList("10032","cs.ai"))
+    print(getTagList("10032", "cs.se"))
+    print(getTagList("10032", "cs"))
+    print(getTagList("10033", "cs"))
 
