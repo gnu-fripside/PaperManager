@@ -1,5 +1,9 @@
 <template>
   <div class="tagTree">
+    <div>
+      Current User: {{ userId }}
+      Current directory: {{ direc }}
+    </div>
     <div>>
       Tag List:
       <button @click="backward">Back</button>
@@ -24,7 +28,7 @@
       return {
         tagList: [],
         fileList: [],
-        direc: 'cs.ai',
+        direc: 'cs',
         userId: "10032",
         getFail: false,
       }
@@ -84,8 +88,13 @@
             if (res['error_num'] == 0) {
               this.tagList = res['tagList']
             } else {
-              console.log('Error: cannot get tag list!')
-              this.getFail = true
+              if (res['error_num'] == 1) {
+                this.tagList = []
+                console.log('Warning: no son directory!')
+              } else {
+                this.getFail = true
+                console.log('Error: no such directory!')
+              }
             }
           })
       },

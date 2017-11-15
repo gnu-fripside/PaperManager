@@ -33,9 +33,11 @@ def getTagList(userid, currentPath):
     result = {}
     rootDir = "./resource/tags/" + userid + "/"
     rootDir += "/".join(currentPath.split("."))
+    print('rootDir: ' + rootDir)
     try:
         sonDir = os.listdir(rootDir)
         sonDir = [item for item in sonDir if item[-5:] != '.json']
+        print(sonDir)
     except FileNotFoundError:
         result['error_num'] = 2
         result['msg'] = "fail, no such directory"
