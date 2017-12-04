@@ -1,59 +1,67 @@
 from django.db import models
+from django.contrib.auth.models import User
 
 
-class Users(models.Model):
-    user_name = models.CharField(max_length=50)
-    user_password = models.CharField(max_length=50)
-    user_email = models.CharField(max_length=50)
-    user_tag_tree = models.ForeignKey('TagTree', blank=True, null=True)
+# user models
+class Users(User):
+    head_img = models.ImageField()
+    # the root the classification tree
+    classification_tree_root = models.ForeignKey('ClassificationTree')
+    log = models.ForeignKey('Log')
+
+    def __str__(self):
+        return self.username
 
 
-class TagTree(models.Model):
+# user's classification tree model
+class ClassificationTree(models.Model):
     name = models.CharField(max_length=256)
-    userId = models.CharField(max_length=64)
-    father = models.CharField(max_length=64)
-    papers = models.ManyToManyField('PaperNode', blank=True)
+    father = models.ForeignKey('self', blank=True, null=True)
 
     def __str__(self):
         return self.name
 
 
-class PaperNode(models.Model):
+# paper models
+class Paper(models.Model):
     title = models.CharField(max_length=256)
     author = models.ManyToManyField('Author')
-    publishTime = models.DateTimeField(auto_now_add=False)
-    addTime = models.DateTimeField(auto_now_add=True)
-    tags = models.ManyToManyField('Tags')
+    publish_time = models.DateTimeField(auto_now_add=False)
+    add_time = models.DateTimeField(auto_now_add=True)
     source = models.CharField(max_length=256)
-    filePath = models.CharField(max_length=256)
-    hashCode = models.CharField(max_length=64)
-    notes = models.ForeignKey('Note')
+    url = models.CharField(max_length=256)
+    hash_code = models.CharField(max_length=64)
+    classification_tree_node = models.ForeignKey(ClassificationTree)
+    log = models.ManyToManyField('Log')
+    notes = models.ForeignKey('Note', blank=True, null=True)
+
+    def __str__(self):
+        return self.title
 
 
+# the author of the paper
 class Author(models.Model):
     first_name = models.CharField(max_length=128)
     last_name = models.CharField(max_length=128)
     email = models.EmailField()
 
+    def __str__(self):
+        return self.first_name+' '+self.last_name
 
-class Tags(models.Model):
-    tag = models.CharField(max_length=1024)
+
+# the log of the paper
+class Log(models.Model):
+    log = models.CharField(max_length=1024)
 
     def __str__(self):
-        return self.tag
+        return self.log
 
 
+# the notes of a paper
 class Note(models.Model):
-    userId = models.CharField(max_length=64)
-    paperHashCode = models.CharField(max_length=64)
+    paper_title = models.CharField(max_length=256)
+    paper_page = models.IntegerField()
     content = models.CharField(max_length=2048)
-    paper = models.ManyToManyField('PaperNode')
-    page = models.IntegerField()
-
-
-class Book(models.Model):
-    book_name = models.CharField(max_length=64)
-    add_time = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return self.book_name
+        return self.paper_title+':'+self.paper_page

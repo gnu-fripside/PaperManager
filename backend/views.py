@@ -1,21 +1,20 @@
-from django.shortcuts import render
 from django.http import JsonResponse
 from django.core import serializers
+from django.contrib.auth import authenticate, login, logout
 from .utils import util
 from .models import Book, Users
 import json
 
 
-# @require_http_methods(["GET"])
-def register(request):
+def use_register(request):
     """
     User register
     :param request: request
     :return: response{"error_num", "msg":message of error}
     """
     response = {"error_num": 0}
-    user_name = request.GET.get('userId')
-    user_password = request.GET.get('password')
+    user_name = request.POST['username']
+    user_password = request.POST['password']
     if len(Users.objects.filter(user_name=user_name)) > 0:
         response["error_num"] += 1
         response["msg"] = "The user has been registered!"
@@ -25,57 +24,43 @@ def register(request):
     return JsonResponse(response)
 
 
-def login(request):
+def user_login(request):
     """
     User login
     :param request: request
     :return: response{"error_num", "msg":message of errors}
     """
-    response = {"error_num": 0}
-    user_name = request.GET.get('userId')
-    user_password = request.GET.get('password')
-    try:
-        user = Users.objects.get(user_name=user_name).__dict__
-        if user_password != user['user_password']:
-            response["error_num"] += 1
-            response["msg"] = "The password is wrong!"
-    except Exception as e:
-        response["msg"] = str(e)
-        response["error_num"] += 1
+    response = {}
+    username = request.POST['username']
+    password = request.POST['password']
+    user = authenticate(username=username, password=password)
+    if user is not None:
+        if user.is_active:
+            login(request, user)
+            response['error_num'] = 0
+            response['msg'] = "success"
+        else:
+            response['error_num'] = 1
+            response['msg'] = "user is frozen"
+    else:
+        response['error_num'] = 1
+        response['msg'] = "user does not exist or is frozen"
     res = JsonResponse(response)
     if response['error_num'] == 0:
-        res.set_cookie('user_name', user_name, 360001)
+        res.set_cookie('username', username, 360001)
     return res
 
 
-# @require_http_methods(["GET"])
-def add_book(request):
-    response = {}
-    try:
-        book = Book(book_name=request.GET.get('book_name'))
-        book.save()
-        response['msg'] = 'success'
-        response['error_num'] = 0
-    except Exception as e:
-        response['msg'] = str(e)
-        response['error_num'] = 1
-
-    return JsonResponse(response)
-
-
-# @require_http_methods(["GET"])
-def show_books(request):
-    response = {}
-    try:
-        books = Book.objects.filter()
-        response['list'] = json.loads(serializers.serialize("json", books))
-        response['msg'] = 'success'
-        response['error_num'] = 0
-    except Exception as e:
-        response['msg'] = str(e)
-        response['error_num'] = 1
-
-    return JsonResponse(response)
+def user_logout(request):
+    """
+    User logout
+    :param request: request
+    :return: logout success Json Response
+    """
+    logout(request)
+    response = {'error_num': 0, 'msg': 'logout success'}
+    res = JsonResponse(response)
+    return res
 
 
 def getTagList(request):
@@ -90,5 +75,3 @@ def getFileList(request):
     currentPath = request.GET.get('currentPath')
     response = util.getFileList(userId, currentPath)
     return JsonResponse(response)
-
-
