@@ -6,7 +6,48 @@ from .models import Book, Users
 import json
 
 
-# Create your views here.
+# @require_http_methods(["GET"])
+def register(request):
+    """
+    User register
+    :param request: request
+    :return: response{"error_num", "msg":message of error}
+    """
+    response = {"error_num": 0}
+    user_name = request.GET.get('userId')
+    user_password = request.GET.get('password')
+    if len(Users.objects.filter(user_name=user_name)) > 0:
+        response["error_num"] += 1
+        response["msg"] = "The user has been registered!"
+    else:
+        user = Users.objects.create(user_name=user_name, user_password=user_password)
+        user.save()
+    return JsonResponse(response)
+
+
+def login(request):
+    """
+    User login
+    :param request: request
+    :return: response{"error_num", "msg":message of errors}
+    """
+    response = {"error_num": 0}
+    user_name = request.GET.get('userId')
+    user_password = request.GET.get('password')
+    try:
+        user = Users.objects.get(user_name=user_name).__dict__
+        if user_password != user['user_password']:
+            response["error_num"] += 1
+            response["msg"] = "The password is wrong!"
+    except Exception as e:
+        response["msg"] = str(e)
+        response["error_num"] += 1
+    res = JsonResponse(response)
+    if response['error_num'] == 0:
+        res.set_cookie('user_name', user_name, 360001)
+    return res
+
+
 # @require_http_methods(["GET"])
 def add_book(request):
     response = {}
@@ -50,35 +91,4 @@ def getFileList(request):
     response = util.getFileList(userId, currentPath)
     return JsonResponse(response)
 
-
-# @require_http_methods(["GET"])
-def register(request):
-    response = {"error_num": 0}
-    user_name = request.GET.get('userId')
-    user_password = request.GET.get('password')
-    if len(Users.objects.filter(user_name=user_name)) > 0:
-        response["error_num"] += 1
-        response["msg"] = "The user has been registered!"
-    else:
-        user = Users.objects.create(user_name=user_name, user_password=user_password)
-        user.save()
-    return JsonResponse(response)
-
-
-def login(request):
-    response = {"error_num": 0}
-    user_name = request.GET.get('userId')
-    user_password = request.GET.get('password')
-    try:
-        user = Users.objects.get(user_name=user_name).__dict__
-        if user_password != user['user_password']:
-            response["error_num"] += 1
-            response["msg"] = "The password is wrong!"
-    except Exception as e:
-        response["msg"] = str(e)
-        response["error_num"] += 1
-    res = JsonResponse(response)
-    if response['error_num'] == 0:
-        res.set_cookie('user_name', user_name, 360001)
-    return res
 
