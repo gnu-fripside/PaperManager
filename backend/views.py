@@ -36,17 +36,20 @@ def show_books(request):
 
     return JsonResponse(response)
 
+
 def getTagList(request):
     userId = request.GET.get('userId')
     currentPath = request.GET.get('currentPath')
     response = util.getTagList(userId, currentPath)
     return JsonResponse(response)
 
+
 def getFileList(request):
     userId = request.GET.get('userId')
     currentPath = request.GET.get('currentPath')
     response = util.getFileList(userId, currentPath)
     return JsonResponse(response)
+
 
 # @require_http_methods(["GET"])
 def register(request):
@@ -60,6 +63,7 @@ def register(request):
         user = Users.objects.create(user_name=user_name, user_password=user_password)
         user.save()
     return JsonResponse(response)
+
 
 def login(request):
     response = {"error_num": 0}

@@ -21,7 +21,7 @@ from . import views
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^$', TemplateView.as_view(template_name="index.html")),
-    url(r'^3c6d3132839126b91aea.worker.js$', views.getjs),
+    url(r'^2826b73b13025c06cdf2.worker.js$', views.getjs),
     url(r'^ft$', views.test),
     url(r'^api/', include('backend.urls', namespace='api')),
 ]
