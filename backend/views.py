@@ -2,7 +2,7 @@ from django.http import JsonResponse
 from django.core import serializers
 from django.contrib.auth import authenticate, login, logout
 from .utils import util
-from . import models
+from .models import *
 import json
 
 
@@ -12,15 +12,18 @@ def user_register(request):
     :param request: request
     :return: response{"error_num", "msg":message of error}
     """
-    response = {"error_num": 0}
-    user_name = request.POST['username']
-    user_password = request.POST['password']
-    if len(Users.objects.filter(user_name=user_name)) > 0:
-        response["error_num"] += 1
-        response["msg"] = "The user has been registered!"
+    response = {}
+    username = request.POST['username']
+    password = request.POST['password']
+    email = request.POST['email']
+    if Users.objects.filter(username=username):
+        response['error_num'] = 1
+        response['msg'] = 'The user has been registered!'
     else:
-        user = Users.objects.create(user_name=user_name, user_password=user_password)
+        user = Users.objects.create(username=username, password=password, email=email)
         user.save()
+        response['error_num'] = 0
+        response['msg'] = 'success'
     return JsonResponse(response)
 
 
