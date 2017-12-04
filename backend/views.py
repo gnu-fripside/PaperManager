@@ -2,11 +2,11 @@ from django.http import JsonResponse
 from django.core import serializers
 from django.contrib.auth import authenticate, login, logout
 from .utils import util
-from .models import Book, Users
+from . import models
 import json
 
 
-def use_register(request):
+def user_register(request):
     """
     User register
     :param request: request

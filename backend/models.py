@@ -59,9 +59,9 @@ class Log(models.Model):
 
 # the notes of a paper
 class Note(models.Model):
-    paper_title = models.CharField(max_length=256)
-    paper_page = models.IntegerField()
+    paper_title = models.CharField(max_length=256, default='')
+    paper_page = models.IntegerField(default=0)
     content = models.CharField(max_length=2048)
 
     def __str__(self):
-        return self.paper_title+':'+self.paper_page
+        return self.paper_title+':'+str(self.paper_page)
