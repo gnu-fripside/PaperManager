@@ -33,7 +33,6 @@ class Paper(models.Model):
     hash_code = models.CharField(max_length=64)
     classification_tree_node = models.ForeignKey(ClassificationTree)
     log = models.ManyToManyField('Log')
-    notes = models.ForeignKey('Note', blank=True, null=True)
 
     def __str__(self):
         return self.title
@@ -62,6 +61,7 @@ class Note(models.Model):
     paper_title = models.CharField(max_length=256, default='')
     paper_page = models.IntegerField(default=0)
     content = models.CharField(max_length=2048)
+    paper = models.ForeignKey(Paper)
 
     def __str__(self):
         return self.paper_title+':'+str(self.paper_page)
