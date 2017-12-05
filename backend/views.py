@@ -129,8 +129,9 @@ def save_node(request):
     paper_title = request['paper_title']
     paper = Paper.objects.filter(title=paper_title)
     paper_page = request['paper_page']
-    if Note.objects.filter(paper_title=paper_title, paper_page=paper_page):
-        Note[0].delete()
+    exist = Note.objects.filter(paper_title=paper_title, paper_page=paper_page)
+    if exist:
+        exist[0].delete()
         response['msg'] = 'change note successfully'
     else:
         response['msg'] = 'add note successfully'
