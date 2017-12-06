@@ -8,7 +8,9 @@ import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css'
 Vue.use(ElementUI)
 // import CPdf from './components/CPdf'
-
+import Element from 'element-ui'
+import 'element-ui/lib/theme-chalk/index.css'
+Vue.use(Element)
 Vue.config.productionTip = false
 
 Vue.use(VueResource)

@@ -1,3 +1,6 @@
+ import Element from 'element-ui'
+    import 'element-ui/lib/theme-default/index.css'
+    Vue.use(Element)
 <template>
   <div id="app">
     <img src="./assets/logo.png">
