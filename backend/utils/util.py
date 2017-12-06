@@ -119,6 +119,15 @@ def PaperNodePack(paper_node, userid, tempDir, outputDir, note, log):
     shutil.rmtree(path)
     return outputPath
 
+def FindPaperNote(username, paperNode):
+    pass
+
+def FindPaperLog(username, paperNode):
+    pass
+
+def SubTreePack(subtree_name, userid, tempDir, outputDir):
+    pass
+
 if __name__ == "__main__":
     #print(getTagList("10010", "manga.lovelive"))
     #print(getTagList("10010", "manga.ddlc"))
