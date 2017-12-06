@@ -6,8 +6,8 @@ from django.contrib.auth.models import User
 class Users(User):
     head_img = models.ImageField()
     # the root the classification tree
-    classification_tree_root = models.ForeignKey('ClassificationTree')
-    log = models.ForeignKey('Log')
+    classification_tree_root = models.CharField(max_length=256)
+    log = models.CharField(max_length=256)
 
     def __str__(self):
         return self.username
@@ -17,7 +17,7 @@ class Users(User):
 class ClassificationTree(models.Model):
     username = models.CharField(max_length=256)
     name = models.CharField(max_length=256)
-    father = models.ForeignKey('self', blank=True, null=True)
+    father = models.CharField(max_length=256)
 
     def __str__(self):
         return self.name
@@ -33,8 +33,8 @@ class Paper(models.Model):
     source = models.CharField(max_length=256)
     url = models.CharField(max_length=256)
     hash_code = models.CharField(max_length=64)
-    classification_tree_node = models.ForeignKey(ClassificationTree)
-    log = models.ManyToManyField('Log')
+    classification_tree_node = models.CharField(max_length=256)
+    log = models.CharField(max_length=256)
 
     def __str__(self):
         return self.title
