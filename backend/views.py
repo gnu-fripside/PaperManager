@@ -73,10 +73,11 @@ def add_classification(request):
     :return: Json response{'error_num', 'msg': message of the error}
     """
     response = {}
+    username = request.POST['username']
     father_name = request.POST['father_name']
     new_name = request.POST['name']
-    father = ClassificationTree.objects.filter(name=father_name)
-    exist = ClassificationTree.objects.filter(name=new_name)
+    father = ClassificationTree.objects.filter(name=father_name, username=username)
+    exist = ClassificationTree.objects.filter(name=new_name, username=username)
     if father is None:
         response['error_num'] = 1
         response['msg'] = 'the father node does not exist'
@@ -84,7 +85,9 @@ def add_classification(request):
         response['error_num'] = 2
         response['msg'] = 'the node name had existed'
     else:
-        node = ClassificationTree.objects.create(father[0], new_name)
+        node = ClassificationTree.objects.create(username=username,
+                                                 ClassificationTree=father[0],
+                                                 name=new_name)
         response['error_num'] = 0
         response['msg'] = 'success'
     res = JsonResponse(response)
@@ -98,21 +101,31 @@ def add_paper(request):
     :return: later add
     """
     response = {}
+    username = request.POST['username']
     title = request.POST['title']
-    author = request.POST['author']
+    authors = request.POST['author']
     publish_time = request.POST['publish_time']
     add_time = request.POST['add_time']
     source = request.POST['source']
     url = request.POST['url']
     hash_code = request.POST['hash_code']
     node_name = request.POST['node_name']
-    node = ClassificationTree.objects.filter(name=node_name)
-    paper = Paper.objects.create(title=title, publish_time=publish_time,
+    node = ClassificationTree.objects.filter(username=username, name=node_name)
+    paper = Paper.objects.create(username=username, title=title,
+                                 publish_time=publish_time,
                                  add_time=add_time, source=source,
                                  url=url, hash_code=hash_code,
                                  classification_tree_node=node[0])
-    for au in author:
-        paper.author.add(au)
+    for au in authors:
+        author = Author.objects.filter(first_name=au['first_name'],
+                                       last_name=au['last_name'],
+                                       email=au['email'])
+        if author:
+            paper.author.add(author[0])
+        else:
+            new_author = Author.objects.create(first_name=au['first_name'], last_name=au['last_name'],
+                                               email=au['email'])
+            paper.author.add(new_author)
     response['error_num'] = 0
     response['msg'] = 'success'
     res = JsonResponse(response)
@@ -126,19 +139,96 @@ def save_node(request):
     :return: later add
     """
     response = {}
-    paper_title = request['paper_title']
-    paper = Paper.objects.filter(title=paper_title)
-    paper_page = request['paper_page']
-    exist = Note.objects.filter(paper_title=paper_title, paper_page=paper_page)
+    username = request.POST['username']
+    paper_title = request.POST['paper_title']
+    paper_page = request.POST['paper_page']
+    exist = Note.objects.filter(username=username, paper_title=paper_title, paper_page=paper_page)
     if exist:
         exist[0].delete()
         response['msg'] = 'change note successfully'
     else:
         response['msg'] = 'add note successfully'
-    note = Note.objects.create(paper_title, paper_page, paper[0])
+    note = Note.objects.create(username=username,
+                               paper_title=paper_title,
+                               paper_page=paper_page)
     response['error_num'] = 0
     res = JsonResponse(response)
     return res
+
+
+def show_paper_detail(request):
+    """
+    show the paper detail
+    :param request: request
+    :return: response
+    """
+    response = {'error_num': 0, 'msg': 'success'}
+    title = request.POST['title']
+    username = request.POST['username']
+    response['title'] = title
+    paper = Paper.objects.filter(title=title, username=username)
+    response['publish_time'] = paper[0].publish_time
+    response['add_time'] = paper[0].add_time
+    response['source'] = paper[0].source
+    response['url'] = paper[0].url
+    res = JsonResponse[response]
+    return res
+
+
+def read_paper(request):
+    """
+    read the paper
+    :param request: request
+    :return: response
+    """
+    response = {}
+    username = request['username']
+    title = request['title']
+    page = request['page']
+    paper = Paper.objects.filter(username=username, title=title)
+    note = Note.objects.filter(username=username, paper_title=title, paper_page=page)
+    response['path'] = username+'/'+title
+    response['note'] = note[0].content
+    res = JsonResponse[response]
+
+
+def show_paper_of_the_node(request):
+    """
+    show the paper in the node
+    :param request: request
+    :return: response
+    """
+    response = {}
+    username = request.POST['username']
+    node_name = request.POST['classification_node']
+    node = ClassificationTree.objects.get(username=username, name=node_name)
+    papers = Paper.objects.filter(username=username, classification_tree_node=node)
+    papers_title = []
+    for paper in papers:
+        papers_title.append(paper.title)
+    response['papers_title'] = papers_title
+    res = JsonResponse(response)
+    return res
+
+
+def show_classification_tree(request):
+    """
+    show the classification tree
+    :param request: request
+    :return: response
+    """
+    username = request.POST['username']
+    user = Users.objects.get(username=username)
+    root = user.classification_tree_root
+
+
+def show_paper_of_the_subtree(request):
+    """
+    show the paper list of the subtree
+    :param request: request
+    :return: response
+    """
+
 
 
 def getTagList(request):

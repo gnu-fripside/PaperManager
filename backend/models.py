@@ -15,6 +15,7 @@ class Users(User):
 
 # user's classification tree model
 class ClassificationTree(models.Model):
+    username = models.CharField(max_length=256)
     name = models.CharField(max_length=256)
     father = models.ForeignKey('self', blank=True, null=True)
 
@@ -24,6 +25,7 @@ class ClassificationTree(models.Model):
 
 # paper models
 class Paper(models.Model):
+    username = models.CharField(max_length=256)
     title = models.CharField(max_length=256)
     author = models.ManyToManyField('Author')
     publish_time = models.DateTimeField(auto_now_add=False)
@@ -50,6 +52,7 @@ class Author(models.Model):
 
 # the log of the paper
 class Log(models.Model):
+    username = models.CharField(max_length=256)
     log = models.CharField(max_length=1024)
 
     def __str__(self):
@@ -58,10 +61,10 @@ class Log(models.Model):
 
 # the notes of a paper
 class Note(models.Model):
+    username = models.CharField(max_length=256)
     paper_title = models.CharField(max_length=256, default='')
     paper_page = models.IntegerField(default=0)
     content = models.CharField(max_length=2048)
-    paper = models.ForeignKey(Paper)
 
     def __str__(self):
         return self.paper_title+':'+str(self.paper_page)
