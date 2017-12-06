@@ -1,49 +1,67 @@
 from django.db import models
+from django.contrib.auth.models import User
 
 
-class Book(models.Model):
-    book_name = models.CharField(max_length=64)
-    add_time = models.DateTimeField(auto_now_add=True)
+# user models
+class Users(User):
+    head_img = models.ImageField()
+    # the root the classification tree
+    classification_tree_root = models.ForeignKey('ClassificationTree')
+    log = models.ForeignKey('Log')
 
-    def __unicode__(self):
-        return self.book_name
+    def __str__(self):
+        return self.username
 
-# Create your models here.
-class TagTree(models.Model):
+
+# user's classification tree model
+class ClassificationTree(models.Model):
     name = models.CharField(max_length=256)
-    userId = models.CharField(max_length=64)
-    father = models.CharField(max_length=64)
+    father = models.ForeignKey('self', blank=True, null=True)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
+
+# paper models
+class Paper(models.Model):
+    title = models.CharField(max_length=256)
+    author = models.ManyToManyField('Author')
+    publish_time = models.DateTimeField(auto_now_add=False)
+    add_time = models.DateTimeField(auto_now_add=True)
+    source = models.CharField(max_length=256)
+    url = models.CharField(max_length=256)
+    hash_code = models.CharField(max_length=64)
+    classification_tree_node = models.ForeignKey(ClassificationTree)
+    log = models.ManyToManyField('Log')
+
+    def __str__(self):
+        return self.title
+
+
+# the author of the paper
 class Author(models.Model):
     first_name = models.CharField(max_length=128)
     last_name = models.CharField(max_length=128)
     email = models.EmailField()
 
+    def __str__(self):
+        return self.first_name+' '+self.last_name
+
+
+# the log of the paper
+class Log(models.Model):
+    log = models.CharField(max_length=1024)
+
+    def __str__(self):
+        return self.log
+
+
+# the notes of a paper
 class Note(models.Model):
-    userId = models.CharField(max_length=64)
-    paperHashCode = models.CharField(max_length=64)
+    paper_title = models.CharField(max_length=256, default='')
+    paper_page = models.IntegerField(default=0)
     content = models.CharField(max_length=2048)
+    paper = models.ForeignKey(Paper)
 
-class PaperNode(models.Model):
-    title = models.CharField(max_length=256)
-    #############################################
-    # TODO change author and add tags list
-    # authors = models.ManyToManyField(Author)
-    # tags = models.ManyToManyField(tag), tag is't completed
-    # notes = models.ForeignKey(Note)
-    #############################################
-    author = models.CharField(max_length=512)
-    publishTime = models.DateTimeField(auto_now_add=False)
-    addTime = models.DateTimeField(auto_now_add=True)
-    tags = models.CharField(max_length=1024)
-    source = models.CharField(max_length=256)
-    filePath = models.CharField(max_length=256)
-    hashCode = models.CharField(max_length=64)
-
-class Users(models.Model):
-    user_name = models.CharField(max_length=50)
-    user_password = models.CharField(max_length=50)
-    user_email = models.CharField(max_length=50)
+    def __str__(self):
+        return self.paper_title+':'+str(self.paper_page)

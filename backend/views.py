@@ -1,40 +1,145 @@
-from django.shortcuts import render
 from django.http import JsonResponse
 from django.core import serializers
+from django.contrib.auth import authenticate, login, logout
 from .utils import util
-from .models import Book, Users
+from .models import *
 import json
 
 
-# Create your views here.
-# @require_http_methods(["GET"])
-def add_book(request):
+def user_register(request):
+    """
+    User register
+    :param request: request
+    :return: response{"error_num", "msg":message of error}
+    """
     response = {}
-    try:
-        book = Book(book_name=request.GET.get('book_name'))
-        book.save()
-        response['msg'] = 'success'
-        response['error_num'] = 0
-    except Exception as e:
-        response['msg'] = str(e)
+    username = request.POST['username']
+    password = request.POST['password']
+    email = request.POST['email']
+    if Users.objects.filter(username=username):
         response['error_num'] = 1
-
+        response['msg'] = 'The user has been registered!'
+    else:
+        root = ClassificationTree.objects.create(name='root')
+        user = Users.objects.create(username=username, password=password, email=email, classification_tree_root=root)
+        response['error_num'] = 0
+        response['msg'] = 'success'
     return JsonResponse(response)
 
 
-# @require_http_methods(["GET"])
-def show_books(request):
+def user_login(request):
+    """
+    User login
+    :param request: request
+    :return: response{"error_num", "msg":message of errors}
+    """
     response = {}
-    try:
-        books = Book.objects.filter()
-        response['list'] = json.loads(serializers.serialize("json", books))
-        response['msg'] = 'success'
-        response['error_num'] = 0
-    except Exception as e:
-        response['msg'] = str(e)
+    username = request.POST['username']
+    password = request.POST['password']
+    user = authenticate(username=username, password=password)
+    if user is not None:
+        if user.is_active:
+            login(request, user)
+            response['error_num'] = 0
+            response['msg'] = "success"
+        else:
+            response['error_num'] = 1
+            response['msg'] = "user is frozen"
+    else:
         response['error_num'] = 1
+        response['msg'] = "user does not exist or is frozen"
+    res = JsonResponse(response)
+    if response['error_num'] == 0:
+        res.set_cookie('username', username, 360001)
+    return res
 
-    return JsonResponse(response)
+
+def user_logout(request):
+    """
+    User logout
+    :param request: request
+    :return: logout success Json Response
+    """
+    logout(request)
+    response = {'error_num': 0, 'msg': 'logout success'}
+    res = JsonResponse(response)
+    return res
+
+
+def add_classification(request):
+    """
+    add node in the classification tree
+    :param request: request
+    :return: Json response{'error_num', 'msg': message of the error}
+    """
+    response = {}
+    father_name = request.POST['father_name']
+    new_name = request.POST['name']
+    father = ClassificationTree.objects.filter(name=father_name)
+    exist = ClassificationTree.objects.filter(name=new_name)
+    if father is None:
+        response['error_num'] = 1
+        response['msg'] = 'the father node does not exist'
+    elif exist is not None:
+        response['error_num'] = 2
+        response['msg'] = 'the node name had existed'
+    else:
+        node = ClassificationTree.objects.create(father[0], new_name)
+        response['error_num'] = 0
+        response['msg'] = 'success'
+    res = JsonResponse(response)
+    return res
+
+
+def add_paper(request):
+    """
+    add paper in one node of the classification tre
+    :param request: request
+    :return: later add
+    """
+    response = {}
+    title = request.POST['title']
+    author = request.POST['author']
+    publish_time = request.POST['publish_time']
+    add_time = request.POST['add_time']
+    source = request.POST['source']
+    url = request.POST['url']
+    hash_code = request.POST['hash_code']
+    node_name = request.POST['node_name']
+    node = ClassificationTree.objects.filter(name=node_name)
+    paper = Paper.objects.create(title=title, publish_time=publish_time,
+                                 add_time=add_time, source=source,
+                                 url=url, hash_code=hash_code,
+                                 classification_tree_node=node[0])
+    for au in author:
+        paper.author.add(au)
+    response['error_num'] = 0
+    response['msg'] = 'success'
+    res = JsonResponse(response)
+    return res
+
+
+def save_node(request):
+    """
+    add and change node for a paper
+    :param request: request
+    :return: later add
+    """
+    response = {}
+    paper_title = request['paper_title']
+    paper = Paper.objects.filter(title=paper_title)
+    paper_page = request['paper_page']
+    exist = Note.objects.filter(paper_title=paper_title, paper_page=paper_page)
+    if exist:
+        exist[0].delete()
+        response['msg'] = 'change note successfully'
+    else:
+        response['msg'] = 'add note successfully'
+    note = Note.objects.create(paper_title, paper_page, paper[0])
+    response['error_num'] = 0
+    res = JsonResponse(response)
+    return res
+
 
 def getTagList(request):
     userId = request.GET.get('userId')
@@ -42,39 +147,9 @@ def getTagList(request):
     response = util.getTagList(userId, currentPath)
     return JsonResponse(response)
 
+
 def getFileList(request):
     userId = request.GET.get('userId')
     currentPath = request.GET.get('currentPath')
     response = util.getFileList(userId, currentPath)
     return JsonResponse(response)
-
-# @require_http_methods(["GET"])
-def register(request):
-    response = {"error_num": 0}
-    user_name = request.GET.get('userId')
-    user_password = request.GET.get('password')
-    if len(Users.objects.filter(user_name=user_name)) > 0:
-        response["error_num"] += 1
-        response["msg"] = "The user has been registered!"
-    else:
-        user = Users.objects.create(user_name=user_name, user_password=user_password)
-        user.save()
-    return JsonResponse(response)
-
-def login(request):
-    response = {"error_num": 0}
-    user_name = request.GET.get('userId')
-    user_password = request.GET.get('password')
-    try:
-        user = Users.objects.get(user_name=user_name).__dict__
-        if user_password != user['user_password']:
-            response["error_num"] += 1
-            response["msg"] = "The password is wrong!"
-    except Exception as e:
-        response["msg"] = str(e)
-        response["error_num"] += 1
-    res = JsonResponse(response)
-    if response['error_num'] == 0:
-        res.set_cookie('user_name', user_name, 360001)
-    return res
-

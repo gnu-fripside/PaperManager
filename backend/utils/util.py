@@ -3,6 +3,9 @@ from .TagTree import TagTree
 from .ArxivScrapy import paperDown
 from .PaperNode import PaperNode
 import os
+import time
+import shutil
+import zipfile
 
 
 def AddPaper(userid, title, author, time, tags, source, filePath):
@@ -88,6 +91,33 @@ def getFileList(userid, currentPath):
         result['msg'] = "success"
         result['fileList'] = sonFile
     return result
+
+def PaperNodePack(paper_node, userid, tempDir, outputDir, note, log):
+    path = os.path.join(tempDir, str(userid))
+    if not os.path.exists(path):
+        os.makedirs(path)
+    note_path = os.path.join(path, "note.json")
+    log_path = os.path.join(path, "log.json")
+    shutil.copy(paper_node.filePath, os.path.join(path, paper_node.hash + ".pdf"))
+    info_path = os.path.join(path, "info.json")
+    with open(info_path,"w") as f:
+        f.write(str(paper_node.toDict()))
+        f.close()
+    with open(note_path, "w") as f:
+        f.write(str(note))
+        f.close()
+    with open(log_path, "w") as f:
+        f.write(str(log))
+        f.close()
+    outputPath = os.path.join(outputDir, str(userid)+"_"+str(int(time.time())) + ".zip")
+    with zipfile.ZipFile(os.path.join(outputPath), "w",
+                         zipfile.ZIP_DEFLATED) as f:
+        for dirPath, dirNames, fileNames in os.walk(path):
+            for filename in fileNames:
+                f.write(os.path.join(dirPath, filename))
+        f.close()
+    shutil.rmtree(path)
+    return outputPath
 
 if __name__ == "__main__":
     #print(getTagList("10010", "manga.lovelive"))

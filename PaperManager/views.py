@@ -4,7 +4,7 @@ from django.core import serializers
 import json
 
 def getjs(request):
-    return FileResponse(open('/home/codergwy/project/PaperManager/frontend/dist/3c6d3132839126b91aea.worker.js', 'r').read())
+    return FileResponse(open('frontend/dist/2826b73b13025c06cdf2.worker.js', 'r').read())
 
 def test(request):
     return FileResponse(open('/home/codergwy/a.py', 'r').read())
