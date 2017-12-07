@@ -1,7 +1,8 @@
 # encoding:utf-8
-# from .TagTree import TagTree
-# from .ArxivScrapy import paperDown
-# from .PaperNode import PaperNode
+from .TagTree import TagTree
+from .ArxivScrapy import paperDown
+from .PaperNode import PaperNode
+from backend.models import *
 import os
 import time
 import shutil
@@ -123,10 +124,20 @@ def PaperPackLite(currentPath, paper_file, userid, tempDir, outputDir):
     pass
 
 def FindPaperNote(username, paperNode):
-    pass
+    notes = Note.objects.filter(username=username, paper_title=paperNode.title)
+    note_dict = []
+    for note in notes:
+        tmp = {'page': note.paper_page, 'content': note.content}
+        note_dict.append(tmp)
+    return note_dict
 
 def FindPaperLog(username, paperNode):
-    pass
+    logs = Log.objects.filter(username=username, paper_title=paperNode.title)
+    log_dict = []
+    for log in logs:
+        tmp = {'log_id': log.id, 'log_content': log.log}
+        log_dict.append(tmp)
+    return log_dict
 
 def SubTreePaperPack(currentPath, userid, tempDir, outputDir):
     status = getTagList(userid, currentPath)
