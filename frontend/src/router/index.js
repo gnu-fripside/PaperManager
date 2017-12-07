@@ -1,48 +1,50 @@
-import Vue from 'vue'
-import Router from 'vue-router'
-import showPdf from '@/components/showPdf'
-import tagTree from '@/components/tagTree'
-import login from '@/components/login'
-import register from '@/components/register'
-import index from '@/components/index'
-Vue.use(Router)
+import Vue from 'vue';
+import Router from 'vue-router';
+import showPdf from '@/components/showPdf';
+import tagTree from '@/components/tagTree';
+import login from '@/components/login';
+import register from '@/components/register';
+import index from '@/components/index';
+Vue.use(Router);
 
-export default new Router({
-  routes: [
-    /*
+export default new Router(
     {
-      path: '/',
-      name: 'showPdf',
-      component: showPdf
-    },
-    */
-    {
-      path: '/',
-      name: 'index',
-      component: index,
-      // children: [
-    },
+    routes: [
         {
-          path: '/login',
-          name: 'login',
-          component: login,
+            path: '/',
+            name: 'index',
+            component: index,
+            children: [
+                {
+                    path: 'showPdf',
+                    component: showPdf
+                },
+                {
+                    path: 'tagTree',
+                    component: tagTree
+                },
+            ]
         },
         {
-          path: '/register',
-          name: 'register',
-          component: register,
+            path: '/login',
+            name: 'login',
+            component: login
         },
         {
-          path: '/showPdf',
-          name: 'showPdf',
-          component: showPdf,
+            path: '/register',
+            name: 'register',
+            component: register
         },
         {
-          path: '/tag',
-          name: 'tagTree',
-          component: tagTree
+            path: '/showPdfss',
+            name: 'showPdf',
+            component: showPdf
         },
-      // ]
-    // }
-  ]
-})
+        {
+            path: '/tagss',
+            name: 'tagTree',
+            component: tagTree
+        }
+    ]
+    }
+)

@@ -1,8 +1,8 @@
 <template>
   <div class="login">
     <div>
-      <input type="text" placeholder="input user id" v-model="userId"></input>
-      <input type="password" placeholder="input password" v-model="password"></input>
+      <input type="text" placeholder="input user id" v-model="userId">user</input>
+      <input type="password" placeholder="input password" v-model="password">password</input>
     </div>
     <div>{{ status }}</div>
     <div>
