@@ -128,6 +128,8 @@ def add_paper(request):
     response['error_num'] = 0
     response['msg'] = 'success'
     res = JsonResponse(response)
+    Log.objects.create(username=username, paper_title=title,
+                       log='add paper '+title+' in '+node_name)
     return res
 
 
@@ -154,6 +156,8 @@ def save_note(request):
                                content=note_content)
     response['error_num'] = 0
     res = JsonResponse(response)
+    Log.objects.create(username=username, paper_title=paper_title,
+                       log='add note in'+paper_title+' page'+paper_page)
     return res
 
 
@@ -193,6 +197,8 @@ def read_paper(request):
     response['path'] = username+'/'+title
     response['note'] = note
     res = JsonResponse(response)
+    Log.objects.create(username=username, paper_title=title,
+                       log='read paper '+title)
     return res
 
 
