@@ -5,16 +5,20 @@
       Current directory: {{ direc }}
     </div>
     <div>>
-      Tag List:
-      <button @click="backward">Back</button>
+      <el-dialog>Tag List:</el-dialog>
+      <el-button @click="backward">Back</el-button>
       <ul v-for="tag in tagList">
-        <li @click="nextTag(tag)">{{ tag }}</li>
+        <li @click="nextTag(tag)">
+          <el-button>{{ tag }}</el-button>
+        </li>
       </ul>
     </div>
     <div>
-      File List:
+      <el-dialog>File List:</el-dialog>
       <ul v-for="file in fileList">
-        <li>{{ file }}</li>
+        <li>
+          <el-button>{{ file }}</el-button>
+        </li>
       </ul>
     </div>
   </div>

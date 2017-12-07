@@ -23,5 +23,5 @@ def paperDown(arxivID, paperDir):
         f.write(get)
         f.close()
     return os.path.join(paperDir, hash + ".pdf")
-# if __name__ == "__main__":
-#     print(paperDown("1407.0028","paper"))
+if __name__ == "__main__":
+    print(paperDown("1407.0028","paper"))

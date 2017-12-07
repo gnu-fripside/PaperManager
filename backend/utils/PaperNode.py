@@ -15,7 +15,7 @@ class PaperNode:
     dict notes: notes add by user
     str filePath: the path of origin file
     str hash: sha1 value of the origin file
-
+    int readStatus: read status of this paper, 0 means not read, 1 means roughly, 2 means clearly
     method AddNote
 
     method toDict():
@@ -33,7 +33,7 @@ class PaperNode:
 
 
 class PaperNode:
-    def __init__(self, userid, title, author, publishtime, addtime, tags, source, url, filePath):
+    def __init__(self, userid, title, author, publishtime, addtime, tags, source, url, filePath, readStatus):
         self.userid = userid
         self.title = title
         self.author = author
@@ -43,6 +43,7 @@ class PaperNode:
         self.source = source
         self.url = url
         self.filePath = filePath
+        self.readStatus = readStatus
         with open(self.filePath, "rb") as f:
             sha1obj = hashlib.sha1()
             sha1obj.update(f.read())
@@ -62,6 +63,7 @@ class PaperNode:
         dictPaperNode["url"] = self.url
         dictPaperNode["filePath"] = self.filePath
         dictPaperNode["hash"] = self.hash
+        dictPaperNode["readStatus"] = self.readStatus
         return dictPaperNode
 
     def Pack(self, userid, tempDir, outputDir):

@@ -12,6 +12,25 @@ import zipfile
 def AddPaper(userid, title, author, time, tags, source, filePath):
     pass
 
+def UpdatePaperInfo(userid):
+    pass
+
+"""
+function movePaper(userid, paperNode, newTag):
+    str userid: the user's name
+    PaperNode paperNode: tag needs to be added
+    str newTag:new Tag path of this paper, separated by point
+    :return
+        PaperNode paperNode: new PaperNode object, with updated information
+"""
+
+def movePaper(userid, paperNode, newTag):
+    newPath = "../resource/tags/"+str(userid)+"/"+"/".join(newTag.split("."))+paperNode["filePath"].split("/")[-1]
+    shutil.copyfile(paperNode["filePath"],newPath)
+    os.remove(paperNode["filePath"])
+    paperNode["filePath"] = newPath
+    paperNode["tags"] = newTag
+    return paperNode
 
 # def initializeTagTree(userid, filePath):
 #     rootTag = TagTree("root", userid, None)
@@ -30,8 +49,25 @@ function AddTag(userid, tag, parentTag)
 
 
 def AddTag(userid, tag, parentTag):
-    pass
-
+    rootDir = "../resource/tags/" + str(userid) + "/"
+    targetPath = rootDir + os.path.join(parentTag.split(".").append(tag))
+    if not os.path.exists(targetPath):
+        os.makedirs(targetPath)
+        return {'error_num':0,'message':"create succeed."}
+    else:
+        return {'error_num':1,'message':"exists"}
+    
+"""
+function getTagList(userid, currentPath):
+    str userid: the user's name
+    str currentPath: the current tag path, separated by point
+    :return
+        dict result: search result
+        :parameter
+            int error_num: return error code, 0, means succeed, 1 means no sub tag, 2 means current tag not exist
+            str msg: message
+            list tagList: son tags
+"""
 
 def getTagList(userid, currentPath):
     result = {}
@@ -111,7 +147,7 @@ def PaperNodePack(paper_node, userid, tempDir, outputDir, note, log):
         f.write(str(log))
         f.close()
     outputPath = os.path.join(outputDir, str(userid)+"_"+str(int(time.time())) + ".zip")
-    with zipfile.ZipFile(os.path.join(outputPath), "w",
+    with zipfile.ZipFile(outputPath, "w",
                          zipfile.ZIP_DEFLATED) as f:
         for dirPath, dirNames, fileNames in os.walk(path):
             for filename in fileNames:
@@ -139,6 +175,7 @@ def FindPaperLog(username, paperNode):
         log_dict.append(tmp)
     return log_dict
 
+<<<<<<< HEAD
 def SubTreePaperPack(currentPath, userid, tempDir, outputDir):
     status = getTagList(userid, currentPath)
     if status['error_num'] == 0:
@@ -153,6 +190,24 @@ def SubTreePaperPack(currentPath, userid, tempDir, outputDir):
         
     
 
+=======
+def SubTreePack(subtreePath, userid, tempDir, outputDir):
+    piece = "/".join(subtreePath.split("."))
+    originPath = "../resource/tags/" + userid + piece
+    tempRoot = os.path.join(tempDir,userid)
+    tempPath = os.path.join(tempRoot, piece)
+    shutil.copytree(originPath, tempPath)
+    outputPath = os.path.join(outputDir, str(userid) + "_" + str(int(time.time())) + ".zip")
+    with zipfile.ZipFile(outputPath, "w",
+                         zipfile.ZIP_DEFLATED) as f:
+        for dirPath, dirNames, fileNames in os.walk(tempRoot):
+            for filename in fileNames:
+                f.write(os.path.join(dirPath, filename))
+        f.close()
+    shutil.rmtree(tempRoot)
+    return outputPath
+    pass
+>>>>>>> dev-frontend
 
 if __name__ == "__main__":
     #print(getTagList("10010", "manga.lovelive"))
