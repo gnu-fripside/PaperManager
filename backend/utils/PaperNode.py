@@ -6,10 +6,12 @@ import zipfile
 class PaperNode:
     str userid: the symbol of user
     str title: paper's title
+    list(str) author: author of this paper
     str publishtime: paper's publish time
     str addtime: paper's add time
     list(str) tags: tags of this paper, edited by each user, from root to leaf
     str source: the conference or periodical of this paper
+    str url: online read link of this paper, can be None
     dict notes: notes add by user
     str filePath: the path of origin file
     str hash: sha1 value of the origin file
@@ -31,7 +33,7 @@ class PaperNode:
 
 
 class PaperNode:
-    def __init__(self, userid, title, author, publishtime, addtime, tags, source, filePath):
+    def __init__(self, userid, title, author, publishtime, addtime, tags, source, url, filePath):
         self.userid = userid
         self.title = title
         self.author = author
@@ -39,7 +41,7 @@ class PaperNode:
         self.addtime = addtime
         self.tags = tags
         self.source = source
-        self.notes = {}
+        self.url = url
         self.filePath = filePath
         with open(self.filePath, "rb") as f:
             sha1obj = hashlib.sha1()
@@ -47,20 +49,17 @@ class PaperNode:
             self.hash = str(sha1obj.hexdigest())
             f.close()
 
-    def AddNote(self):
-        pass
-
     def toDict(self):
         dictPaperNode = {}
         dictPaperNode["title"] = self.title
         dictPaperNode["author"] = self.author
         dictPaperNode["publishtime"] = str(self.time)
         dictPaperNode["addtime"] = str(self.addtime)
-        dictPaperNode["tags"] = {}
+        dictPaperNode["tags"] = []
         for i in range(len(self.tags)):
             dictPaperNode["tags"][str(i + 1)] = self.tags[i]
         dictPaperNode["source"] = self.source
-        dictPaperNode["notes"] = self.notes
+        dictPaperNode["url"] = self.url
         dictPaperNode["filePath"] = self.filePath
         dictPaperNode["hash"] = self.hash
         return dictPaperNode
