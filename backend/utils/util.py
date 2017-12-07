@@ -1,7 +1,7 @@
 # encoding:utf-8
-from .TagTree import TagTree
-from .ArxivScrapy import paperDown
-from .PaperNode import PaperNode
+# from .TagTree import TagTree
+# from .ArxivScrapy import paperDown
+# from .PaperNode import PaperNode
 import os
 import time
 import shutil
@@ -12,12 +12,12 @@ def AddPaper(userid, title, author, time, tags, source, filePath):
     pass
 
 
-def initializeTagTree(userid, filePath):
-    rootTag = TagTree("root", userid, None)
-    with open(filePath, "w") as f:
-        f.write(str(rootTag.toDict()))
-        f.close()
-    return rootTag
+# def initializeTagTree(userid, filePath):
+#     rootTag = TagTree("root", userid, None)
+#     with open(filePath, "w") as f:
+#         f.write(str(rootTag.toDict()))
+#         f.close()
+#     return rootTag
 
 
 """
@@ -34,7 +34,7 @@ def AddTag(userid, tag, parentTag):
 
 def getTagList(userid, currentPath):
     result = {}
-    rootDir = "./resource/tags/" + userid + "/"
+    rootDir = "../resource/tags/" + userid + "/"
     rootDir += "/".join(currentPath.split("."))
     print('rootDir: ' + rootDir)
     try:
@@ -64,7 +64,7 @@ def getTagList(userid, currentPath):
 
 def getFileList(userid, currentPath):
     result = {}
-    rootDir = "./resource/tags/" + userid + "/"
+    rootDir = "../resource/tags/" + userid + "/"
     rootDir += "/".join(currentPath.split("."))
     try:
         sonDir = os.listdir(rootDir)
@@ -119,21 +119,36 @@ def PaperNodePack(paper_node, userid, tempDir, outputDir, note, log):
     shutil.rmtree(path)
     return outputPath
 
+def PaperPackLite(currentPath, paper_file, userid, tempDir, outputDir):
+    pass
+
 def FindPaperNote(username, paperNode):
     pass
 
 def FindPaperLog(username, paperNode):
     pass
 
-def SubTreePack(subtree_name, userid, tempDir, outputDir):
-    pass
+def SubTreePaperPack(currentPath, userid, tempDir, outputDir):
+    status = getTagList(userid, currentPath)
+    if status['error_num'] == 0:
+        for son in status['tagList']:
+            nextPath = ".".join([currentPath,son])
+            SubTreePaperPack(nextPath,userid,tempDir,outputDir)
+    fileStatus = getFileList(userid,currentPath)
+    path = os.path.join(tempDir, str(userid))
+    if not os.path.exists(path):
+        os.makedirs(path)
+     
+        
+    
+
 
 if __name__ == "__main__":
     #print(getTagList("10010", "manga.lovelive"))
     #print(getTagList("10010", "manga.ddlc"))
     #print(getTagList("10010", "manga.white_album"))
-    print(getTagList("10032","cs.ai"))
-    print(getTagList("10032", "cs.se"))
+    #print(getTagList("10032","cs.ai"))
+    #print(getTagList("10032", "cs.se"))
     print(getTagList("10032", "cs"))
-    print(getTagList("10033", "cs"))
+    print(getFileList("10032", "cs.ai"))
 

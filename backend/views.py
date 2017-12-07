@@ -297,3 +297,7 @@ def getFileList(request):
     currentPath = request.GET.get('currentPath')
     response = util.getFileList(userId, currentPath)
     return JsonResponse(response)
+
+def SubTreePaperPack(request):
+    userId = request.GET.get('userId')
+    currentPath = request.GET.get('currentPath')
