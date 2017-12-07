@@ -12,6 +12,25 @@ import zipfile
 def AddPaper(userid, title, author, time, tags, source, filePath):
     pass
 
+def UpdatePaperInfo(userid):
+    pass
+
+"""
+function movePaper(userid, paperNode, newTag):
+    str userid: the user's name
+    PaperNode paperNode: tag needs to be added
+    str newTag:new Tag path of this paper, separated by point
+    :return
+        PaperNode paperNode: new PaperNode object, with updated information
+"""
+
+def movePaper(userid, paperNode, newTag):
+    newPath = "../resource/tags/"+str(userid)+"/"+"/".join(newTag.split("."))+paperNode["filePath"].split("/")[-1]
+    shutil.copyfile(paperNode["filePath"],newPath)
+    os.remove(paperNode["filePath"])
+    paperNode["filePath"] = newPath
+    paperNode["tags"] = newTag
+    return paperNode
 
 def initializeTagTree(userid, filePath):
     rootTag = TagTree("root", userid, None)
@@ -38,7 +57,17 @@ def AddTag(userid, tag, parentTag):
     else:
         return {'error_num':1,'message':"exists"}
     
-
+"""
+function getTagList(userid, currentPath):
+    str userid: the user's name
+    str currentPath: the current tag path, separated by point
+    :return
+        dict result: search result
+        :parameter
+            int error_num: return error code, 0, means succeed, 1 means no sub tag, 2 means current tag not exist
+            str msg: message
+            list tagList: son tags
+"""
 
 def getTagList(userid, currentPath):
     result = {}
