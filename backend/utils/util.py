@@ -2,6 +2,7 @@
 from .TagTree import TagTree
 from .ArxivScrapy import paperDown
 from .PaperNode import PaperNode
+from backend.models import *
 import os
 import time
 import shutil
@@ -120,10 +121,20 @@ def PaperNodePack(paper_node, userid, tempDir, outputDir, note, log):
     return outputPath
 
 def FindPaperNote(username, paperNode):
-    pass
+    notes = Note.objects.filter(username=username, paper_title=paperNode.title)
+    note_dict = []
+    for note in notes:
+        tmp = {'page': note.paper_page, 'content': note.content}
+        note_dict.append(tmp)
+    return note_dict
 
 def FindPaperLog(username, paperNode):
-    pass
+    logs = Log.objects.filter(username=username, paper_title=paperNode.title)
+    log_dict = []
+    for log in logs:
+        tmp = {'log_id': log.id, 'log_content': log.log}
+        log_dict.append(tmp)
+    return log_dict
 
 def SubTreePack(subtree_name, userid, tempDir, outputDir):
     pass

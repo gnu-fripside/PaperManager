@@ -53,7 +53,9 @@ class Author(models.Model):
 # the log of the paper
 class Log(models.Model):
     username = models.CharField(max_length=256)
+    paper_title = models.CharField(max_length=256, blank=True)
     log = models.CharField(max_length=1024)
+    add_time = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return self.log
