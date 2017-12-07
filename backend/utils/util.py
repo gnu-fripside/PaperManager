@@ -30,12 +30,19 @@ function AddTag(userid, tag, parentTag)
 
 
 def AddTag(userid, tag, parentTag):
-    pass
+    rootDir = "../resource/tags/" + str(userid) + "/"
+    targetPath = rootDir + os.path.join(parentTag.split(".").append(tag))
+    if not os.path.exists(targetPath):
+        os.makedirs(targetPath)
+        return {'error_num':0,'message':"create succeed."}
+    else:
+        return {'error_num':1,'message':"exists"}
+    
 
 
 def getTagList(userid, currentPath):
     result = {}
-    rootDir = "./resource/tags/" + userid + "/"
+    rootDir = "../resource/tags/" + userid + "/"
     rootDir += "/".join(currentPath.split("."))
     print('rootDir: ' + rootDir)
     try:
@@ -65,7 +72,7 @@ def getTagList(userid, currentPath):
 
 def getFileList(userid, currentPath):
     result = {}
-    rootDir = "./resource/tags/" + userid + "/"
+    rootDir = "../resource/tags/" + userid + "/"
     rootDir += "/".join(currentPath.split("."))
     try:
         sonDir = os.listdir(rootDir)
@@ -111,7 +118,7 @@ def PaperNodePack(paper_node, userid, tempDir, outputDir, note, log):
         f.write(str(log))
         f.close()
     outputPath = os.path.join(outputDir, str(userid)+"_"+str(int(time.time())) + ".zip")
-    with zipfile.ZipFile(os.path.join(outputPath), "w",
+    with zipfile.ZipFile(outputPath, "w",
                          zipfile.ZIP_DEFLATED) as f:
         for dirPath, dirNames, fileNames in os.walk(path):
             for filename in fileNames:
@@ -136,7 +143,21 @@ def FindPaperLog(username, paperNode):
         log_dict.append(tmp)
     return log_dict
 
-def SubTreePack(subtree_name, userid, tempDir, outputDir):
+def SubTreePack(subtreePath, userid, tempDir, outputDir):
+    piece = "/".join(subtreePath.split("."))
+    originPath = "../resource/tags/" + userid + piece
+    tempRoot = os.path.join(tempDir,userid)
+    tempPath = os.path.join(tempRoot, piece)
+    shutil.copytree(originPath, tempPath)
+    outputPath = os.path.join(outputDir, str(userid) + "_" + str(int(time.time())) + ".zip")
+    with zipfile.ZipFile(outputPath, "w",
+                         zipfile.ZIP_DEFLATED) as f:
+        for dirPath, dirNames, fileNames in os.walk(tempRoot):
+            for filename in fileNames:
+                f.write(os.path.join(dirPath, filename))
+        f.close()
+    shutil.rmtree(tempRoot)
+    return outputPath
     pass
 
 if __name__ == "__main__":
