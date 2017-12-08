@@ -175,22 +175,7 @@ def FindPaperLog(username, paperNode):
         log_dict.append(tmp)
     return log_dict
 
-<<<<<<< HEAD
-def SubTreePaperPack(currentPath, userid, tempDir, outputDir):
-    status = getTagList(userid, currentPath)
-    if status['error_num'] == 0:
-        for son in status['tagList']:
-            nextPath = ".".join([currentPath,son])
-            SubTreePaperPack(nextPath,userid,tempDir,outputDir)
-    fileStatus = getFileList(userid,currentPath)
-    path = os.path.join(tempDir, str(userid))
-    if not os.path.exists(path):
-        os.makedirs(path)
-     
-        
-    
 
-=======
 def SubTreePack(subtreePath, userid, tempDir, outputDir):
     piece = "/".join(subtreePath.split("."))
     originPath = "../resource/tags/" + userid + piece
@@ -207,7 +192,7 @@ def SubTreePack(subtreePath, userid, tempDir, outputDir):
     shutil.rmtree(tempRoot)
     return outputPath
     pass
->>>>>>> dev-frontend
+
 
 if __name__ == "__main__":
     #print(getTagList("10010", "manga.lovelive"))
