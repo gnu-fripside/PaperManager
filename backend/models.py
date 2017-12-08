@@ -34,6 +34,7 @@ class Paper(models.Model):
     url = models.CharField(max_length=256)
     hash_code = models.CharField(max_length=64)
     classification_tree_node = models.CharField(max_length=256)
+    file_path = models.CharField(max_length=256)
     log = models.CharField(max_length=256)
 
     def __str__(self):
