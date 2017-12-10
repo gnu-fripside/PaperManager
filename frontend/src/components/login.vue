@@ -38,10 +38,9 @@
                       password: this.form.password })
                     )
           .then((response) => {
-            console.log(response)
-            console.log(response.data)
-            // var res = JSON.parse(response.data)
+
             var res = response.data
+
             if (res['error_num'] == 0) {
               this.status = 'succeed'
               let expireDays = 1000 * 60 * 60 * 24 * 30;
