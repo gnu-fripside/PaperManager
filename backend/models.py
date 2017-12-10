@@ -36,6 +36,7 @@ class Paper(models.Model):
     classification_tree_node = models.CharField(max_length=256)
     file_path = models.CharField(max_length=256)
     log = models.CharField(max_length=256)
+    read_status = models.IntegerField(default=0)
 
     def __str__(self):
         return self.title
