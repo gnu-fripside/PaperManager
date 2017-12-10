@@ -1,6 +1,13 @@
 <template>
-  <div class="fileInfo">
+    <div class="fileInfo">
     <el-form :model="Paper" :rules="rules" ref="Paper" label-width="100px" class="paperInfo">
+      <el-form-item label="Class" prop="class">
+        <el-cascader
+          :options="classTree"
+          v-model="classes"
+          @change="changeClass">
+        </el-cascader>
+      </el-form-item>
       <el-form-item label="Title" prop="title">
         <el-input
           :placeholder="Paper.title"
@@ -75,6 +82,11 @@
         </el-input>
       </el-form-item>
     </el-form>
+    <el-button
+      type="primary"
+      @click="submitForm('Paper')">
+      Submit Changes
+    </el-button>
   </div>
 </template>
 
@@ -105,8 +117,45 @@
                     hash_code: "",
                     classification_tree_node: "",
                     log: ""
-                }
-            }
-        },
+                },
+                classTree: [
+                    {
+                        value: 'cs',
+                        label: 'cs',
+                        children: [
+                            {
+                                value: 'ai',
+                                label: 'ai',
+                                children: [
+                                    {
+                                        value: 'cv',
+                                        label: 'cv'
+                                    },
+                                    {
+                                        value: 'nlp',
+                                        label: 'nlp'
+                                    }
+                                ]
+                            },
+                            {
+                                value: 'system',
+                                label: 'system',
+                                children: [
+                                    {
+                                        value: 'os',
+                                        label: 'os'
+                                    },
+                                    {
+                                        value: 'hardware',
+                                        label: 'hardware'
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ],
+                classes: []
+            };
+        }
     }
 </script>
