@@ -38,16 +38,6 @@
             }
           })
       },
-    },
-  }
-</script>
-<script>
-  export default {
-    name: 'register',
-    data () {
-      return {}
-    },
-    methods: {
       register: function () {
         this.$router.push({path:'/register'})
       },

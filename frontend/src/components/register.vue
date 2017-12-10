@@ -10,6 +10,7 @@
     <div>{{ status }}</div>
     <div class="enter"  style="margin: 20px 0">
       <el-button type="success" @click="register">register</el-button>
+      <el-button type="success" @click="gotologin">Go to login</el-button>
     </div>
   </div>
 </template>
@@ -36,6 +37,9 @@
               this.status = res['msg']
             }
           })
+      },
+      gotologin: function () {
+        this.$router.push({path:'/login'})
       },
     },
   }

@@ -1,14 +1,14 @@
 <template>
   <div class="showPdf">
     <input type="checkbox" v-model="show">
-    <select v-model="src" style="width: 30em">
+    <select v-model="src" style="width: 10em">
       <option v-for="item in pdfList" :value="item" v-text="item"></option>
     </select>
     <input v-model.number="page" type="number" style="width: 5em"> /{{numPages}}
     <button @click="rotate += 90">&#x27F3;</button>
     <button @click="rotate -= 90">&#x27F2;</button>
     <button @click="$refs.pdf.print()">print</button>
-    <div style="width: 50%">
+    <div style="width: 75%">
       <div v-if="loadedRatio > 0 && loadedRatio < 1" style="background-color: green; color: white; text-align: center" :style="{ width: loadedRatio * 100 + '%' }">{{ Math.floor(loadedRatio * 100) }}%</div>
       <pdf v-if="show" ref="pdf" style="border: 1px solid red" :src="src" :page="page" :rotate="rotate" @password="password" @progress="loadedRatio = $event" @error="error" @numPages="numPages = $event"></pdf>
     </div>
