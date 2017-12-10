@@ -5,8 +5,11 @@ from .utils import util
 from .models import *
 from .utils.PaperNode import *
 import json
+from django.views.decorators.csrf import csrf_exempt
 
 
+
+@csrf_exempt 
 def user_register(request):
     """
     User register
@@ -14,20 +17,23 @@ def user_register(request):
     :return: response{"error_num", "msg":message of error}
     """
     response = {}
-    username = request.POST["username"]
-    password = request.POST["password"]
-    email = request.POST["email"]
+    username = request.POST['username']
+    password = request.POST['password']
+    #email = request.POST['email']
+
     if Users.objects.filter(username=username):
         response["error_num"] = 1
         response["msg"] = "The user has been registered!"
     else:
         user = Users.objects.create(username=username, password=password,
-                                    email=email, classification_tree_root="root")
-        response["error_num"] = 0
-        response["msg"] = "success"
+                                    # email=email,
+                                    email='aaa',
+                                    classification_tree_root='root')
+        response['error_num'] = 0
+        response['msg'] = 'success'
     return JsonResponse(response)
 
-
+@csrf_exempt 
 def user_login(request):
     """
     User login
@@ -35,26 +41,30 @@ def user_login(request):
     :return: response{"error_num", "msg":message of errors}
     """
     response = {}
-    username = request.POST["username"]
-    password = request.POST["password"]
-    user = authenticate(username=username, password=password)
+    print('Resuqst ', request)
+    print('post: ', request.POST.keys())
+    username_ = request.POST['username']
+    password_ = request.POST['password']
+    user = Users.objects.filter(username=username_)
+    print(user)
     if user is not None:
-        if user.is_active:
-            login(request, user)
+        if user[0].password == password_:
             response["error_num"] = 0
             response["msg"] = "success"
         else:
             response["error_num"] = 1
-            response["msg"] = "user is frozen"
+            response["msg"] = "user password is wrong"
     else:
         response["error_num"] = 1
-        response["msg"] = "user does not exist or is frozen"
+        response["msg"] = "user does not exist"
     res = JsonResponse(response)
-    if response["error_num"] == 0:
-        res.set_cookie("username", username, 360001)
+
+    if response['error_num'] == 0:
+        res.set_cookie('username', username_, 360001)
     return res
 
 
+@csrf_exempt 
 def user_logout(request):
     """
     User logout

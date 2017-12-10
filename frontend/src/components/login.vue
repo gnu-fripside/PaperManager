@@ -2,10 +2,10 @@
   <div class="login" style="width:300px;margin-left:auto;margin-right:auto;">
     <el-form ref="form" :model="form" >
     <el-form-item label="username">
-      <el-input type="text" placeholder="input user id" v-model="username" size="large">user</el-input>
+      <el-input type="text" placeholder="input user id" v-model="form.username" size="large">user</el-input>
     </el-form-item>
     <el-form-item label="password">
-      <el-input type="password" placeholder="input password" v-model="password" size="large">password</el-input>
+      <el-input type="password" placeholder="input password" v-model="form.password" size="large">password</el-input>
     </el-form-item> 
     <el-form-item style="margin: 20px 0" >
       <el-button type="success" @click="login">login</el-button>
@@ -31,14 +31,20 @@
     },
     methods: {
       login: function () {
-        this.$http.post('http://127.0.0.1:8080/api/login',{param:{username:this.usernamea,password:this.password}})
+        var axios = require('axios')
+        var qs = require('qs')
+         axios.post('/api/login',
+                    qs.stringify({ username: this.form.username,
+                      password: this.form.password })
+                    )
           .then((response) => {
-            var res = JSON.parse(response.bodyText)
+            alert('fdsfasfsda');
+            var res = JSON.parse(response)
             if (res['error_num'] == 0) {
               this.status = 'succeed'
               let expireDays = 1000 * 60 * 60 * 24 * 30;
               this.setCookie('session', response.data.session, expireDays);
-              this.$router.push({path:'/'})
+              this.$router.push({path:'/index'})
               // go back
             } else {
               this.status = res['msg']
