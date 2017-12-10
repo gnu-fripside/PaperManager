@@ -8,7 +8,7 @@
           @change="changeClass">
         </el-cascader>
       </el-form-item>
-      <el-form-item label="Title" prop="title">
+      <el-form-item label="Title" prop="title"> 
         <el-input
           :placeholder="Paper.title"
           v-model="Paper.title">
@@ -19,8 +19,10 @@
         <el-col :span="6">
           <el-form-item
             label="first name"
-            :prop="'first_name_' + author.first_name + '_' + author.last_name"
-            >
+            :rules="[
+                    { required: true, message: 'please input first name', trigger: 'blur' },
+                    ]">
+            :prop="'first_name_' + author.first_name + '_' + author.last_name" >
             <el-input
               :placeholder="author.first_name"
               v-model="author.first_name">
@@ -30,7 +32,10 @@
         <el-col :span="6">
           <el-form-item
             label="last name"
-            :prop="'last_name_' + author.first_name + '_' + author.last_name">
+            :prop="'last_name_' + author.first_name + '_' + author.last_name"
+            :rules="[
+                    { required: true, message: 'please input last name', trigger: 'blur' },
+                    ]">
             <el-input
               :placeholder="author.last_name"
               v-model="author.last_name">
@@ -43,7 +48,11 @@
             :prop="'email_' + author.first_name + '_' + author.last_name">
             <el-input
               :placeholder="author.email"
-              v-model="author.email">
+              v-model="author.email"
+              :rules="[
+                    { required: true, message: 'please input email address', trigger: 'blur' },
+                    { type: 'email', message: 'invalid email address', trigger: 'blur,change' }
+                    ]">
             </el-input>
           </el-form-item>
         </el-col>
@@ -102,60 +111,73 @@
                         {
                             first_name: "aa",
                             last_name: "b",
-                            email: "c",
+                            email: "c"
                         },
                         {
                             first_name: "alah",
                             last_name: "uhak",
-                            email: "bah",
+                            email: "bah"
                         },
                     ],
                     publish_time: "",
                     add_time: "",
                     source: "",
                     url: "",
-                    hash_code: "",
                     classification_tree_node: "",
                     log: ""
                 },
                 classTree: [
-                    {
-                        value: 'cs',
-                        label: 'cs',
-                        children: [
-                            {
-                                value: 'ai',
-                                label: 'ai',
-                                children: [
-                                    {
-                                        value: 'cv',
-                                        label: 'cv'
-                                    },
-                                    {
-                                        value: 'nlp',
-                                        label: 'nlp'
-                                    }
-                                ]
-                            },
-                            {
-                                value: 'system',
-                                label: 'system',
-                                children: [
-                                    {
-                                        value: 'os',
-                                        label: 'os'
-                                    },
-                                    {
-                                        value: 'hardware',
-                                        label: 'hardware'
-                                    }
-                                ]
-                            }
-                        ]
-                    }
                 ],
-                classes: []
-            };
+                classes: [],
+                rules: {
+                    title: [
+                        { required: true, message: 'title cannot be empty', trigger: 'blur' }
+                    ],
+                    publish_time: [
+                        { type: 'date', required: true, message: 'date cannot be empty', trigger: 'change' }
+                    ],
+                    source: [
+                        { required: true, message: 'source cannot be empty', trigger: 'blur' }
+                    ],
+                    url: [
+                        { required: true, message: 'url cannot be empty', trigger: 'blur' }
+                    ],
+                    classes: [
+                        { type: 'array', required: true, message: 'class cannot be empty', trigger: 'change' }
+                    ]
+                }
+            },
+            methods: {
+                changeClass: function () {
+                    this.Paper.classification_tree_nodes = this.classes.join('.');
+                },
+                deleteAuthor: function (author) {
+                    for (var i = 0; i < this.Paper.authors.length; i++) {
+                        if (this.Paper.authors[i].first_name == author.first_name &&
+                            this.Paper.authors[i].last_name == author.last_name &&
+                            this.Paper.authors[i].email == author.email) {
+                            this.Paper.authors.splice(i, 1);
+                        }
+                    }
+                }
+                addAuthor: function () {
+                    var newAuthor = {
+                        first_name: "",
+                        last_name: "",
+                        email: ""
+                    };
+                    this.Paper.authors.push(newAuthor);
+                }
+                submitForm: function () {
+                    
+                }
+            },
+
+            mounted: function() {
+                this.$nextTick(function () {
+                    this.classes = this.Paper.classification_tree_node.split('.');
+                });
+            }
         }
     }
 </script>
