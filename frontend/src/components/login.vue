@@ -1,12 +1,16 @@
 <template>
-  <div class="login">
+  <div class="login" style="width:300px;margin-left:auto;margin-right:auto;">
     <div>
-      <input type="text" placeholder="input user id" v-model="userId">user</input>
-      <input type="password" placeholder="input password" v-model="password">password</input>
+      <el-input type="text" placeholder="input user id" v-model="userId" size="large">user</el-input>
+    </div>
+    </br>
+    <div>
+      <el-input type="password" placeholder="input password" v-model="password" size="large">password</el-input>
     </div>
     <div>{{ status }}</div>
-    <div>
-      <button type="success" @click="login">login</button>
+    <div style="margin: 20px 0" >
+      <el-button type="success" @click="login">login</el-button>
+      <el-button type="success" @click="register">register</el-button>
     </div>
   </div>
 </template>
@@ -33,6 +37,9 @@
               this.status = res['msg']
             }
           })
+      },
+      register: function () {
+        this.$router.push({path:'/register'})
       },
     },
   }
