@@ -19,15 +19,14 @@ def user_register(request):
     response = {}
     username = request.POST['username']
     password = request.POST['password']
-    #email = request.POST['email']
+    email = request.POST['email']
 
     if Users.objects.filter(username=username):
         response["error_num"] = 1
         response["msg"] = "The user has been registered!"
     else:
         user = Users.objects.create(username=username, password=password,
-                                    # email=email,
-                                    email='aaa',
+                                    email=email,
                                     classification_tree_root='root')
         response['error_num'] = 0
         response['msg'] = 'success'
@@ -41,13 +40,10 @@ def user_login(request):
     :return: response{"error_num", "msg":message of errors}
     """
     response = {}
-    print('Resuqst ', request)
-    print('post: ', request.POST.keys())
-    username_ = request.POST['username']
-    password_ = request.POST['password']
+    username_ = request.POST["username"]
+    password_ = request.POST["password"]
     user = Users.objects.filter(username=username_)
-    print(user)
-    if user is not None:
+    if user:
         if user[0].password == password_:
             response["error_num"] = 0
             response["msg"] = "success"
@@ -59,8 +55,8 @@ def user_login(request):
         response["msg"] = "user does not exist"
     res = JsonResponse(response)
 
-    if response['error_num'] == 0:
-        res.set_cookie('username', username_, 360001)
+    if response["error_num"] == 0:
+        res.set_cookie("username", username_, 360001)
     return res
 
 
@@ -325,3 +321,16 @@ def SubTreePaperPack(request):
 
 def paper_node_pack(request):
     pass
+
+
+
+
+
+
+
+
+
+
+
+
+{"error_num": 0, "msg": "success"}

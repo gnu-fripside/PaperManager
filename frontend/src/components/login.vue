@@ -38,16 +38,18 @@
                       password: this.form.password })
                     )
           .then((response) => {
-            alert('fdsfasfsda');
-            var res = JSON.parse(response)
+            console.log(response)
+            console.log(response.data)
+            // var res = JSON.parse(response.data)
+            var res = response.data
             if (res['error_num'] == 0) {
               this.status = 'succeed'
               let expireDays = 1000 * 60 * 60 * 24 * 30;
-              this.setCookie('session', response.data.session, expireDays);
+              // this.$prototype.setCookie('session', response.data.session, expireDays);
               this.$router.push({path:'/index'})
-              // go back
             } else {
               this.status = res['msg']
+              alert(res['msg'])
             }
           })
       },
