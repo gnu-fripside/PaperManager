@@ -3,10 +3,16 @@ import 'element-ui/lib/theme-default/index.css'
 Vue.use(Element)
 
 <template>
+<el-container>
+  <el-header height="95px" style="background:#3091f2;">
   <div id="app">
     <img src="./assets/logo-90px.png">
-    <router-view/>
   </div>
+  </el-header>
+  <el-main>
+    <router-view/> 
+  </el-main>
+</el-container>
 </template>
 
 <script>
@@ -21,7 +27,6 @@ export default {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
+  color: #3091f2;
 }
 </style>
