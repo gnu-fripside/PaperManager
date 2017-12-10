@@ -1,17 +1,19 @@
 <template>
   <div class="login" style="width:300px;margin-left:auto;margin-right:auto;">
-    <div>
-      <el-input type="text" placeholder="input user id" v-model="userId" size="large">user</el-input>
-    </div>
-    </br>
-    <div>
-      <el-input type="password" placeholder="input password" v-model="password" size="large">password</el-input>
-    </div>
-    <div>{{ status }}</div>
-    <div style="margin: 20px 0" >
+    <el-form ref="form" :model="form" >
+    <el-form-item label="username">
+      <el-input type="text" placeholder="input user id" v-model="form.username" size="large">user</el-input>
+    </el-form-item>
+    <el-form-item label="password">
+      <el-input type="password" placeholder="input password" v-model="form.password" size="large">password</el-input>
+    </el-form-item> 
+    <el-form-item style="margin: 20px 0" >
       <el-button type="success" @click="login">login</el-button>
       <el-button type="success" @click="register">register</el-button>
-    </div>
+    </el-form-item>
+    </el-form>
+    <br>
+    <div>{{ status }}</div>
   </div>
 </template>
 
@@ -20,18 +22,29 @@
     name: 'login',
     data () {
       return {
-        userId: "",
-        password: "",
-        status: ""
+        form:{
+          username: "",
+          password: "",
+          status: ""
+        }
       }
     },
     methods: {
       login: function () {
-        this.$http.get('http://127.0.0.1:8080/api/login?userId=' + this.userId + '&password=' + this.password)
+        var axios = require('axios')
+        var qs = require('qs')
+         axios.post('/api/login',
+                    qs.stringify({ username: this.form.username,
+                      password: this.form.password })
+                    )
           .then((response) => {
-            var res = JSON.parse(response.bodyText)
+            alert('fdsfasfsda');
+            var res = JSON.parse(response)
             if (res['error_num'] == 0) {
               this.status = 'succeed'
+              let expireDays = 1000 * 60 * 60 * 24 * 30;
+              this.setCookie('session', response.data.session, expireDays);
+              this.$router.push({path:'/index'})
               // go back
             } else {
               this.status = res['msg']

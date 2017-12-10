@@ -27,7 +27,7 @@ class ClassificationTree(models.Model):
 class Paper(models.Model):
     username = models.CharField(max_length=256)
     title = models.CharField(max_length=256)
-    author = models.ManyToManyField('Author')
+    author = models.ManyToManyField("Author")
     publish_time = models.DateTimeField(auto_now_add=False)
     add_time = models.DateTimeField(auto_now_add=True)
     source = models.CharField(max_length=256)
@@ -36,6 +36,7 @@ class Paper(models.Model):
     classification_tree_node = models.CharField(max_length=256)
     file_path = models.CharField(max_length=256)
     log = models.CharField(max_length=256)
+    read_status = models.IntegerField(default=0)
 
     def __str__(self):
         return self.title
@@ -48,7 +49,7 @@ class Author(models.Model):
     email = models.EmailField()
 
     def __str__(self):
-        return self.first_name+' '+self.last_name
+        return self.first_name+" "+self.last_name
 
 
 # the log of the paper
@@ -65,9 +66,9 @@ class Log(models.Model):
 # the notes of a paper
 class Note(models.Model):
     username = models.CharField(max_length=256)
-    paper_title = models.CharField(max_length=256, default='')
+    paper_title = models.CharField(max_length=256, default="")
     paper_page = models.IntegerField(default=0)
     content = models.CharField(max_length=2048)
 
     def __str__(self):
-        return self.paper_title+':'+str(self.paper_page)
+        return self.paper_title+":"+str(self.paper_page)
