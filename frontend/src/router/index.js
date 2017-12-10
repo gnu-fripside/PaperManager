@@ -14,6 +14,7 @@ export default new Router(
             {
                 path: '/',
                 name: 'index',
+                redirect:'/index',
                 component: index,
                 children: [
                     {
@@ -29,6 +30,11 @@ export default new Router(
                         component: fileInfo
                     }
                 ]
+            },
+            {
+                path:'/index',
+                name:'index',
+                component:index
             },
             {
                 path: '/login',
