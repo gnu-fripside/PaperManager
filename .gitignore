@@ -53,3 +53,4 @@ fabric.properties
 .git/
 *.pyc
 .idea/
+frontend/package-lock.json
