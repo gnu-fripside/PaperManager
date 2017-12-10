@@ -38,7 +38,6 @@
                       password: this.form.password })
                     )
           .then((response) => {
-            alert('fdsfasfsda');
             var res = JSON.parse(response)
             if (res['error_num'] == 0) {
               this.status = 'succeed'

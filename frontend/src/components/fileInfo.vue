@@ -15,13 +15,13 @@
         </el-input>
       </el-form-item>
       Author:
-      <el-row v-for="author in Paper.authors">>
+      <el-row v-for="author in Paper.authors">
         <el-col :span="6">
           <el-form-item
             label="first name"
             :rules="[
                     { required: true, message: 'please input first name', trigger: 'blur' },
-                    ]">
+                    ]"
             :prop="'first_name_' + author.first_name + '_' + author.last_name" >
             <el-input
               :placeholder="author.first_name"
@@ -45,14 +45,15 @@
         <el-col :span="6">
           <el-form-item
             label="email"
-            :prop="'email_' + author.first_name + '_' + author.last_name">
+            :prop="'email_' + author.first_name + '_' + author.last_name"
+            :rules="[
+                    { required: true, message: 'please input email address', trigger: 'blur' },
+                    { type: 'email', message: 'invalid email address', trigger: 'change' }
+                    ]">
             <el-input
               :placeholder="author.email"
               v-model="author.email"
-              :rules="[
-                    { required: true, message: 'please input email address', trigger: 'blur' },
-                    { type: 'email', message: 'invalid email address', trigger: 'blur,change' }
-                    ]">
+              >
             </el-input>
           </el-form-item>
         </el-col>
@@ -146,49 +147,49 @@
                         { type: 'array', required: true, message: 'class cannot be empty', trigger: 'change' }
                     ]
                 }
+            };
+        },
+        methods: {
+            changeClass: function () {
+                this.Paper.classification_tree_nodes = this.classes.join('.');
             },
-            methods: {
-                changeClass: function () {
-                    this.Paper.classification_tree_nodes = this.classes.join('.');
-                },
-                deleteAuthor: function (author) {
-                    for (var i = 0; i < this.Paper.authors.length; i++) {
-                        if (this.Paper.authors[i].first_name == author.first_name &&
-                            this.Paper.authors[i].last_name == author.last_name &&
-                            this.Paper.authors[i].email == author.email) {
-                            this.Paper.authors.splice(i, 1);
-                        }
+            deleteAuthor: function (author) {
+                for (var i = 0; i < this.Paper.authors.length; i++) {
+                    if (this.Paper.authors[i].first_name == author.first_name &&
+                        this.Paper.authors[i].last_name == author.last_name &&
+                        this.Paper.authors[i].email == author.email) {
+                        this.Paper.authors.splice(i, 1);
                     }
                 }
-                addAuthor: function () {
-                    var newAuthor = {
-                        first_name: "",
-                        last_name: "",
-                        email: ""
-                    };
-                    this.Paper.authors.push(newAuthor);
-                },
-                submitForm: function () {
-                    var axios = require('axios');
-                    var qs = require('qs');
-                    axios.post('/api/login',
-                               qs.stringify(this.Paper)
-                              )
-                        .then((response) => {
-                            var res = response.data;
-                            if (res['error_num'] == 0)
-                                alert('Accepted');
-                            else
-                                alert(res['msg']);
-                        });
-                }
             },
-
-            mounted: function() {
-                this.$nextTick(function () {
-                    this.classes = this.Paper.classification_tree_node.split('.');
-                });
+            addAuthor: function () {
+                var newAuthor = {
+                    first_name: "",
+                    last_name: "",
+                    email: ""
+                };
+                this.Paper.authors.push(newAuthor);
+            },
+            submitForm: function () {
+                var axios = require('axios');
+                var qs = require('qs');
+                axios.post('/api/login',
+                           qs.stringify(this.Paper)
+                          )
+                    .then((response) => {
+                        var res = response.data;
+                        if (res['error_num'] == 0)
+                            alert('Accepted');
+                        else
+                            alert(res['msg']);
+                    });
             }
+        },
+
+        mounted: function() {
+            this.$nextTick(function () {
+                this.classes = this.Paper.classification_tree_node.split('.');
+            });
         }
     }
 </script>
