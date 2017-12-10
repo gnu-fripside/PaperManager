@@ -4,6 +4,7 @@ from django.contrib.auth import authenticate, login, logout
 from .utils import util
 from .models import *
 from .utils.PaperNode import *
+from .utils.ArxivScrapy import *
 import json
 from django.views.decorators.csrf import csrf_exempt
 
@@ -116,14 +117,13 @@ def add_paper(request):
     title = request.POST["title"]
     authors = request.POST["author"]
     publish_time = request.POST["publish_time"]
-    add_time = request.POST["add_time"]
     source = request.POST["source"]
     url = request.POST["url"]
-    hash_code = request.POST["hash_code"]
+    file_path = request.POST["file_path"]
+    hash_code = paperDown(url, file_path)
     node_name = request.POST["node_name"]
     paper = Paper.objects.create(username=username, title=title,
-                                 publish_time=publish_time,
-                                 add_time=add_time, source=source,
+                                 publish_time=publish_time, source=source,
                                  url=url, hash_code=hash_code,
                                  classification_tree_node=node_name)
     for au in authors:
