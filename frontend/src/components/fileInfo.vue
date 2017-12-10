@@ -8,7 +8,7 @@
           @change="changeClass">
         </el-cascader>
       </el-form-item>
-      <el-form-item label="Title" prop="title"> 
+      <el-form-item label="Title" prop="title">
         <el-input
           :placeholder="Paper.title"
           v-model="Paper.title">
@@ -93,7 +93,7 @@
     </el-form>
     <el-button
       type="primary"
-      @click="submitForm('Paper')">
+      @click="submitForm">
       Submit Changes
     </el-button>
   </div>
@@ -167,9 +167,20 @@
                         email: ""
                     };
                     this.Paper.authors.push(newAuthor);
-                }
+                },
                 submitForm: function () {
-                    
+                    var axios = require('axios');
+                    var qs = require('qs');
+                    axios.post('/api/login',
+                               qs.stringify(this.Paper)
+                              )
+                        .then((response) => {
+                            var res = response.data;
+                            if (res['error_num'] == 0)
+                                alert('Accepted');
+                            else
+                                alert(res['msg']);
+                        });
                 }
             },
 
