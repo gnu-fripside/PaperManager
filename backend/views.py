@@ -4,6 +4,7 @@ from django.contrib.auth import authenticate, login, logout
 from .utils import util
 from .models import *
 from .utils.PaperNode import *
+from .utils.ArxivScrapy import *
 import json
 from django.views.decorators.csrf import csrf_exempt
 
@@ -112,14 +113,13 @@ def add_paper(request):
     title = request.POST["title"]
     authors = request.POST["author"]
     publish_time = request.POST["publish_time"]
-    add_time = request.POST["add_time"]
     source = request.POST["source"]
     url = request.POST["url"]
-    hash_code = request.POST["hash_code"]
+    file_path = request.POST["file_path"]
+    hash_code = paperDown(url, file_path)
     node_name = request.POST["node_name"]
     paper = Paper.objects.create(username=username, title=title,
-                                 publish_time=publish_time,
-                                 add_time=add_time, source=source,
+                                 publish_time=publish_time, source=source,
                                  url=url, hash_code=hash_code,
                                  classification_tree_node=node_name)
     for au in authors:
@@ -317,20 +317,38 @@ def SubTreePaperPack(request):
     tempDir = "../resource/temp"
     outputDir = "../resource/tags/"+userId+"/outputDir"
     outputpath = util.SubTreePack(currentPath, userId, tempDir, outputDir)
-    return "http:/127.0.0.1:8080/backend/resource/tags/"+userId+"/"+outputpath
+    return "http://127.0.0.1:8080/backend/resource/tags/"+userId+"/"+outputpath
+
 
 def paper_node_pack(request):
-    pass
+    userId = request.GET.get("userId")
+    paper_title = request.GET.get("paper_title")
+    paper = Paper.objects.filter(username=userId, paper_title=paper_title)[0]
+    notes = Note.objects.filter(username=userId, paper_title=paper_title)
+    logs = Log.objects.filter(username=userId, paper_title=paper_title)
+    authors = []
+    for author_ex in paper.author.all():
+        tmp = {"first_name": author_ex.first_name,
+               "last_name": author_ex.last_name,
+               "email": author_ex.email}
+        authors.append(tmp)
+    paper_node = PaperNode(userId, paper_title, authors, paper.publish_time, paper.add_time,
+                           paper.classification_tree_node, paper.source, paper.url, paper.file_path,
+                           paper.read_status)
+    note = []
+    for note_ex in notes.all():
+        tmp = {"username": userId, "paper_title": paper_title,
+               "paper_page": note_ex.paper_page,
+               "context": note_ex.content}
+        note.append(tmp)
+    log = []
+    for logs_ex in logs.all():
+        tmp = {"username": userId, "paper_title": logs_ex.paper_title,
+               "log_context": logs_ex.log,
+               "add_time": logs_ex.add_time}
+        log.append(tmp)
+    tempDir = "../resource/tags/tmp"
+    outputDir = "../resource/tags/"+userId+"/outputDir"
+    output_path = util.PaperNodePack(paper_node, userId, tempDir, outputDir, note, log)
+    return "http://127.0.0.1:8080/backend/resource/tags/"+userId+"/"+output_path
 
-
-
-
-
-
-
-
-
-
-
-
-{"error_num": 0, "msg": "success"}

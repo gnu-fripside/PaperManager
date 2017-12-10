@@ -10,7 +10,7 @@ constUA = ( "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6) "
 
 
 def paperDown(arxivID, paperDir):
-    downloadLink = "https://arxiv.org/pdf/" + str(arxivID) + ".pdf"
+    downloadLink = str(arxivID)
     request = urllib.request.Request(downloadLink)
     request.add_header("User-Agent", constUA)
     get = urllib.request.urlopen(request).read()
@@ -22,6 +22,6 @@ def paperDown(arxivID, paperDir):
     with open(os.path.join(paperDir, hash + ".pdf"), "wb") as f:
         f.write(get)
         f.close()
-    return os.path.join(paperDir, hash + ".pdf")
+    return hash
 if __name__ == "__main__":
     print(paperDown("1407.0028","paper"))
