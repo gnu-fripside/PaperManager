@@ -3,17 +3,59 @@ from .TagTree import TagTree
 from .ArxivScrapy import paperDown
 from .PaperNode import PaperNode
 from backend.models import *
+from django.utils import timezone
 import os
 import time
 import shutil
 import zipfile
 
 
-def AddPaper(userid, title, author, time, tags, source, filePath):
-    pass
+def AddPaper(userid, title, author, publish_time, tags, source, url, hash_code, filePath):
+    username = userid
+    title = title
+    authors = author
+    publish_time = publish_time
+    add_time = timezone.now()
+    node_name = tags
+    paper = Paper.objects.create(username=username, title=title,
+                                 publish_time=publish_time,
+                                 add_time=add_time, source=source,
+                                 url=url, hash_code=hash_code,
+                                 classification_tree_node=node_name,
+                                 file_path=filePath)
+    for au in authors:
+        author = Author.objects.filter(first_name=au['first_name'],
+                                       last_name=au['last_name'],
+                                       email=au['email'])
+        if author:
+            paper.author.add(author[0])
+        else:
+            new_author = Author.objects.create(first_name=au['first_name'], last_name=au['last_name'],
+                                               email=au['email'])
+            paper.author.add(new_author)
+    return
 
-def UpdatePaperInfo(userid):
-    pass
+
+def UpdatePaperInfo(userid, title, author, publish_time, tags, source, url, hash_code, filePath):
+    paper = Paper.objects.filter(username=userid, title=title)[0]
+    paper.publish_time = publish_time
+    paper.source = source
+    paper.url = url
+    paper.hash_code = hash_code
+    paper.file_path = filePath
+    paper.classification_tree_node = tags
+    paper.author.clear()
+    for au in author:
+        author_ex = Author.objects.filter(first_name=au['first_name'],
+                                       last_name=au['last_name'],
+                                       email=au['email'])
+        if author_ex:
+            paper.author.add(author[0])
+        else:
+            new_author = Author.objects.create(first_name=au['first_name'], last_name=au['last_name'],
+                                               email=au['email'])
+            paper.author.add(new_author)
+    return
 
 """
 function movePaper(userid, paperNode, newTag):
@@ -175,22 +217,7 @@ def FindPaperLog(username, paperNode):
         log_dict.append(tmp)
     return log_dict
 
-<<<<<<< HEAD
-def SubTreePaperPack(currentPath, userid, tempDir, outputDir):
-    status = getTagList(userid, currentPath)
-    if status['error_num'] == 0:
-        for son in status['tagList']:
-            nextPath = ".".join([currentPath,son])
-            SubTreePaperPack(nextPath,userid,tempDir,outputDir)
-    fileStatus = getFileList(userid,currentPath)
-    path = os.path.join(tempDir, str(userid))
-    if not os.path.exists(path):
-        os.makedirs(path)
-     
-        
-    
 
-=======
 def SubTreePack(subtreePath, userid, tempDir, outputDir):
     piece = "/".join(subtreePath.split("."))
     originPath = "../resource/tags/" + userid + piece
@@ -207,7 +234,7 @@ def SubTreePack(subtreePath, userid, tempDir, outputDir):
     shutil.rmtree(tempRoot)
     return outputPath
     pass
->>>>>>> dev-frontend
+
 
 if __name__ == "__main__":
     #print(getTagList("10010", "manga.lovelive"))

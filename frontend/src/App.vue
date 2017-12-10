@@ -4,7 +4,7 @@ Vue.use(Element)
 
 <template>
   <div id="app">
-    <img src="./assets/logo.png">
+    <img src="./assets/logo-90px.png">
     <router-view/>
   </div>
 </template>

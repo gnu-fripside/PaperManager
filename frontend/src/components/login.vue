@@ -10,7 +10,7 @@
     <div>{{ status }}</div>
     <div style="margin: 20px 0" >
       <el-button type="success" @click="login">login</el-button>
-      <el-button type="success" @click="login">register</el-button>
+      <el-button type="success" @click="register">register</el-button>
     </div>
   </div>
 </template>
@@ -37,6 +37,19 @@
               this.status = res['msg']
             }
           })
+      },
+    },
+  }
+</script>
+<script>
+  export default {
+    name: 'register',
+    data () {
+      return {}
+    },
+    methods: {
+      register: function () {
+        this.$router.push({path:'/register'})
       },
     },
   }
