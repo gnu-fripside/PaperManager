@@ -15,6 +15,7 @@
   "dependencies": {
     "axios": "^0.17.1",
     "element-ui": "^2.0.7",
+    "marked": "^0.3.7",
     "pdfjs": "^2.0.0-alpha.3",
     "pdfjs-dist": "^2.0.114",
     "vue": "^2.5.2",

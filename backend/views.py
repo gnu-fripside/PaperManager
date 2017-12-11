@@ -20,15 +20,14 @@ def user_register(request):
     response = {}
     username = request.POST['username']
     password = request.POST['password']
-    #email = request.POST['email']
+    email = request.POST['email']
 
     if Users.objects.filter(username=username):
         response["error_num"] = 1
         response["msg"] = "The user has been registered!"
     else:
         user = Users.objects.create(username=username, password=password,
-                                    # email=email,
-                                    email='aaa',
+                                    email=email,
                                     classification_tree_root='root')
         response['error_num'] = 0
         response['msg'] = 'success'
@@ -42,13 +41,10 @@ def user_login(request):
     :return: response{"error_num", "msg":message of errors}
     """
     response = {}
-    print('Resuqst ', request)
-    print('post: ', request.POST.keys())
-    username_ = request.POST['username']
-    password_ = request.POST['password']
+    username_ = request.POST["username"]
+    password_ = request.POST["password"]
     user = Users.objects.filter(username=username_)
-    print(user)
-    if user is not None:
+    if user:
         if user[0].password == password_:
             response["error_num"] = 0
             response["msg"] = "success"
@@ -60,8 +56,8 @@ def user_login(request):
         response["msg"] = "user does not exist"
     res = JsonResponse(response)
 
-    if response['error_num'] == 0:
-        res.set_cookie('username', username_, 360001)
+    if response["error_num"] == 0:
+        res.set_cookie("username", username_, 360001)
     return res
 
 
@@ -379,3 +375,4 @@ def paper_node_pack(request):
     outputDir = "../resource/tags/"+userId+"/outputDir"
     output_path = util.PaperNodePack(paper_node, userId, tempDir, outputDir, note, log)
     return "http://127.0.0.1:8080/backend/resource/tags/"+userId+"/"+output_path
+
