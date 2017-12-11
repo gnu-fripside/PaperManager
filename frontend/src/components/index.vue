@@ -1,5 +1,6 @@
 <template>
   <div class="index">
+    <!--
     <header class="header">
       <el-row>
         <el-col :span="24">
@@ -13,7 +14,8 @@
         </el-col>
       </el-row>
     </header>
-    <div style="position: relative;height: 40px;width: 100%;"></div>
+    -->
+    <div style="position: relative;height: 10px;width: 100%;"></div>
 
     <main>
       <!-- 左侧导航 -->
@@ -71,7 +73,7 @@
   header .el-menu-demo{padding-left: 300px!important;}
 
   /* 主内容区 */
-  main{    display: -webkit-box;  display: -ms-flexbox;  display: flex;  min-height: 800px;  border: solid 10px #E9ECF1;  background-color: #FCFCFC;  }
+  main{    display: -webkit-box;  display: -ms-flexbox;  display: flex;  min-height: 800px; min-width: 1300px;  border: solid 10px #E9ECF1;  background-color: #FCFCFC;  }
   main .main-left{text-align: center;width: 100px;float: left;}
   main .main-right{-webkit-box-flex: 1;  -ms-flex: 1;  flex: 1;  background-color: #fff; padding: 10px 10px; }
   main .el-menu{background-color: transparent!important;}

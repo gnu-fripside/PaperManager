@@ -25,7 +25,7 @@
             <el-col :span="7">
               <el-tabs type="border-card">
                 <el-tab-pane label="Editer">
-                  <textarea :value="input" @input="update"></textarea>
+                  <textarea :value="input" @input="update" cols="44" rows="40"></textarea>
                   <br>
                   <el-button :value="submit" @click="submitNote">Submit note</el-button>
                 </el-tab-pane>
