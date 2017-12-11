@@ -108,10 +108,14 @@
                                           name: this.newClass})
                           )
                     .then((response) => {
-                        this.showTags();
-                        this.addClass = false;
+                        if (response["error_num"] == 0) {
+                            this.showTags();
+                            this.addClass = false;
+                        } else {
+                            alert(response["msg"]);
+                        }
                     });
-            }
+            },
 
             add_file () {
                 this.addFile = true;
@@ -119,6 +123,21 @@
             add_new_file () {
                 var axios = require('axios')
                 var qs = require('qs')
+                axios.post('/api/add_paper',
+                           qs.stringify({username: this.userId,
+                                         fitle: this.newFileTitle,
+                                         url: this.newUrl,
+                                         file_path: this.direc.join('/'),
+                                         node_name: this.direc[this.direc.length - 1]})
+                          )
+                    .then((response) => {
+                        if (response["error_num"] == 0) {
+                            this.showFile();
+                            this.addFile = false;
+                        } else {
+                            console.log(response["msg"]);
+                        }
+                    })
 
             }
         },
