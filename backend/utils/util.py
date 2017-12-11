@@ -184,7 +184,7 @@ def PaperPackLite(currentPath, paper_file, userid, tempDir, outputDir):
 def FindPaperNote(username, paperNode):
     notes = Note.objects.filter(username=username, paper_title=paperNode.title)
     note_dict = []
-    for note in notes:
+    for note in notes.all():
         tmp = {'page': note.paper_page, 'content': note.content}
         note_dict.append(tmp)
     return note_dict
@@ -192,7 +192,7 @@ def FindPaperNote(username, paperNode):
 def FindPaperLog(username, paperNode):
     logs = Log.objects.filter(username=username, paper_title=paperNode.title)
     log_dict = []
-    for log in logs:
+    for log in logs.all():
         tmp = {'log_id': log.id, 'log_content': log.log}
         log_dict.append(tmp)
     return log_dict
