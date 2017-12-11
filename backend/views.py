@@ -143,6 +143,11 @@ def add_paper(request):
 
 
 def update_paper_info(request):
+    """
+    update the paper info
+    :param request: request
+    :return: resoponse
+    """
     userid = request.POST["username"]
     title = request.POST["title"]
     publish_time = request.POST["publish_time"]
@@ -169,6 +174,11 @@ def update_paper_info(request):
 
 
 def update_read_status(request):
+    """
+    update the read status of the paper
+    :param request: request
+    :return: response
+    """
     username = request.GET.get("username")
     paper_title = request.GET.get("paper_title")
     paper = Paper.objects.filter(username=username, paper_title=paper_title)[0]
@@ -176,7 +186,7 @@ def update_read_status(request):
     paper.save()
     response = {"error_num": 0, "msg": "success"}
     Log.objects.create(username=username, paper_title=paper_title,
-                       log="update the read_status of " + title)
+                       log="update the read_status of " + paper_title)
     return JsonResponse(response)
 
 
@@ -237,12 +247,13 @@ def read_paper(request):
     response = {}
     username = request["username"]
     title = request["title"]
+    paper = Paper.objects.filter(username=username, title=title)[0]
     notes = Note.objects.filter(username=username, paper_title=title)
     note = []
     for note_ex in notes.all():
         tmp = {"page": note_ex.paper_page, "content": note_ex.content}
         note.append(tmp)
-    response["path"] = username+"/"+title
+    response["path"] = paper.file_path
     response["note"] = note
     res = JsonResponse(response)
     Log.objects.create(username=username, paper_title=title,
@@ -263,13 +274,14 @@ def show_paper_of_the_node(request):
     papers = Paper.objects.filter(username=username, classification_tree_node=node)
     papers_title = []
     for paper in papers.all():
-        papers_title.append(paper.title)
+        tmp = {"paper_title": paper.title, "hash_code": paper.hash_code}
+        papers_title.append(tmp)
     response["papers_title"] = papers_title
     res = JsonResponse(response)
     return res
 
 
-def find_son(username, node):
+def find_son_node(username, node):
     """
     find the son node name of "node"
     :param username: username
@@ -353,6 +365,11 @@ def getFileList(request):
     return JsonResponse(response)
 
 def SubTreePaperPack(request):
+    """
+    pack the sub tree paper
+    :param request: request
+    :return: response
+    """
     userId = request.GET.get("userId")
     currentPath = request.GET.get("currentPath")
     tempDir = "../resource/temp"
@@ -362,6 +379,11 @@ def SubTreePaperPack(request):
 
 
 def paper_node_pack(request):
+    """
+    pack the paper standard documentation
+    :param request: request
+    :return: response
+    """
     userId = request.GET.get("userId")
     paper_title = request.GET.get("paper_title")
     paper = Paper.objects.filter(username=userId, paper_title=paper_title)[0]
