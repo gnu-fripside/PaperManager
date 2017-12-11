@@ -150,6 +150,7 @@ def update_paper_info(request):
     paper = Paper.objects.filter(username=userid, title=title)[0]
     paper.publish_time = publish_time
     paper.source = source
+    paper.save()
     for au in author:
         author_ex = Author.objects.filter(first_name=au['first_name'],
                                           last_name=au['last_name'],
@@ -160,6 +161,16 @@ def update_paper_info(request):
             new_author = Author.objects.create(first_name=au['first_name'], last_name=au['last_name'],
                                                email=au['email'])
             paper.author.add(new_author)
+    response = {"error_num": 0, "msg": "success"}
+    return JsonResponse(response)
+
+
+def update_read_status(request):
+    username = request.GET.get("username")
+    paper_title = request.GET.get("paper_title")
+    paper = Paper.objects.filter(username=username, paper_title=paper_title)[0]
+    paper.read_status = request.GET.get("read_status")
+    paper.save()
     response = {"error_num": 0, "msg": "success"}
     return JsonResponse(response)
 
@@ -207,6 +218,7 @@ def show_paper_detail(request):
     response["add_time"] = paper[0].add_time
     response["source"] = paper[0].source
     response["url"] = paper[0].url
+    response["read_status"] = paper[0].read_status
     res = JsonResponse(response)
     return res
 
