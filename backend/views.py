@@ -176,7 +176,7 @@ def update_read_status(request):
     paper.save()
     response = {"error_num": 0, "msg": "success"}
     Log.objects.create(username=username, paper_title=paper_title,
-                       log="update the read_status of " + title)
+                       log="update the read_status of " + paper_title)
     return JsonResponse(response)
 
 
