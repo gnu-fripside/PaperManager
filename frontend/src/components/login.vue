@@ -8,13 +8,14 @@
       <el-input type="password" placeholder="input password" v-model="form.password" size="large">password</el-input>
     </el-form-item> 
     <el-form-item style="margin: 20px 0" >
-      <el-button type="success" @click="login">login</el-button>
+      <el-button type="primary" @click="login">login</el-button>
       <el-button type="success" @click="register">register</el-button>
     </el-form-item>
     </el-form>
     <br>
     <div>{{ status }}</div>
-  </div>
+    </div>
+
 </template>
 
 <script>
@@ -25,11 +26,12 @@
         form:{
           username: "",
           password: "",
+        },
           status: ""
-        }
       }
     },
     methods: {
+    /*
       login: function () {
         var axios = require('axios')
         var qs = require('qs')
@@ -44,14 +46,23 @@
             if (res['error_num'] == 0) {
               this.status = 'succeed'
               let expireDays = 1000 * 60 * 60 * 24 * 30;
-              // this.$prototype.setCookie('session', response.data.session, expireDays);
-              this.$router.push({path:'/index'})
+              // this.setCookie('username', this.form.username, expireDays);
+              // this.setCookie('session', response.data.session, expireDays);
+              this.$router.push({name: 'index', params: {name: this.form.username}});
             } else {
               this.status = res['msg']
               alert(res['msg'])
             }
           })
       },
+    */
+        login: function () {
+            this.status = 'succeed'
+            let expireDays = 1000 * 60 * 60 * 24 * 30;
+                        // this.setCookie('username', this.form.username, expireDays);
+                        // this.setCookie('session', response.data.session, expireDays);
+            this.$router.push({name: 'index', params: {name: this.form.username}});
+        }, 
       register: function () {
         this.$router.push({path:'/register'})
       },

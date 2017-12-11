@@ -5,8 +5,7 @@
             <el-radio v-model="radio" label="1">Roughly</el-radio>
             <el-radio v-model="radio" label="2">Clearly</el-radio>
         </el-row>
-
-        <input type="checkbox" v-model="show">
+        
         <select v-model="src" style="width: 10em">
           <option v-for="item in pdfList" :value="item" v-text="item"></option>
         </select>
@@ -20,7 +19,7 @@
           <el-row :gutter="20">
             <el-col :span="17">
               <div v-if="loadedRatio > 0 && loadedRatio < 1" style="background-color: green; color: white; text-align: center" :style="{ width: loadedRatio * 100 + '%' }">{{ Math.floor(loadedRatio * 100) }}%</div>
-              <pdf v-if="show" ref="pdf" style="border: 1.8px liquid red" :src="src" :page="page" :rotate="rotate" @password="password" @progress="loadedRatio = $event" @error="error" @numPages="numPages = $event"></pdf>
+              <pdf ref="pdf" style="border: 1.8px liquid red" :src="src" :page="page" :rotate="rotate" @password="password" @progress="loadedRatio = $event" @error="error" @numPages="numPages = $event"></pdf>
             </el-col>
             <el-col :span="7">
               <el-tabs type="border-card">
@@ -49,8 +48,6 @@ export default {
     },
     data () {
         return {
-
-            show: true,
             pdfList: [
                 '',
                 'https://cdn.mozilla.net/pdfjs/tracemonkey.pdf',
@@ -83,6 +80,17 @@ export default {
             this.input = e.target.value
         },
         exportFile: {}
+    }
+    mounted: function() {
+      //这个是钩子函数
+      //如果cartView函数要执行，必须先执行钩子函数
+      //这个钩子函数完成了对cratView函数的调用
+      //应该注意的是，使用mounted 并不能保证钩子函数中
+      // 的 this.$el 在 document 中。为此还应该引入
+      // Vue.nextTick/vm.$nextTick
+      this.$nextTick(function () {
+        this.pdflist = 
+      })
     }
 }
 </script>

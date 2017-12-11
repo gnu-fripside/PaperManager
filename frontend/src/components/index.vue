@@ -20,10 +20,10 @@
     <main>
       <!-- 左侧导航 -->
       <div class="main-left">
-        <el-menu default-active="/showPdf" class="el-menu-vertical-demo" :router="true">
-          <el-menu-item index="/showPdf" :class="{'isActive': active}">Paper</el-menu-item>
-          <el-menu-item index="/tagTree" :class="{'isActive': !active}">Tag Tree</el-menu-item>
-          <el-menu-item index="/fileInfo" :class="{'isActive': !active}">File Info</el-menu-item>
+        <el-menu default-active="showPdf" class="el-menu-vertical-demo" :router="true">
+          <el-menu-item index="showPdf" :route="{name:'showPdf'}" :class="{'isActive': active}">Paper</el-menu-item>
+          <el-menu-item index="tagTree" :route="{name:'tagTree'}" :class="{'isActive': !active}">Tag Tree</el-menu-item>
+          <el-menu-item index="fileInfo" :route="{name:'fileInfo'}" :class="{'isActive': !active}">File Info</el-menu-item>
         </el-menu>
       </div>
 
