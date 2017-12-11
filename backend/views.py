@@ -86,10 +86,10 @@ def add_classification(request):
     new_name = request.POST["name"]
     father = ClassificationTree.objects.filter(username=username, name=father_name)
     exist = ClassificationTree.objects.filter(username=username, name=new_name)
-    if father is None:
+    if not father:
         response["error_num"] = 1
         response["msg"] = "the father node does not exist"
-    elif exist is not None:
+    elif exist:
         response["error_num"] = 2
         response["msg"] = "the node name had existed"
     else:
@@ -115,11 +115,12 @@ def add_paper(request):
     # publish_time = request.POST["publish_time"]
     # source = request.POST["source"]
     url = request.POST["url"]
-    file_path = request.POST["file_path"]
+    file_path = "resource/tags/"+username+"/"+request.POST["file_path"]
     hash_code = paperDown(url, file_path)
     node_name = request.POST["node_name"]
     paper = Paper.objects.create(username=username, title=title,
                                  url=url, hash_code=hash_code,
+                                 file_path=file_path,
                                  classification_tree_node=node_name)
     """
     for au in authors:
@@ -162,6 +163,8 @@ def update_paper_info(request):
                                                email=au['email'])
             paper.author.add(new_author)
     response = {"error_num": 0, "msg": "success"}
+    Log.objects.create(username=userid, paper_title=title,
+                       log="update the info of "+title)
     return JsonResponse(response)
 
 
@@ -172,6 +175,8 @@ def update_read_status(request):
     paper.read_status = request.GET.get("read_status")
     paper.save()
     response = {"error_num": 0, "msg": "success"}
+    Log.objects.create(username=username, paper_title=paper_title,
+                       log="update the read_status of " + title)
     return JsonResponse(response)
 
 
