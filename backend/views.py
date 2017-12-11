@@ -238,10 +238,10 @@ def find_son(username, node):
     son_node = ClassificationTree.objects.filter(username=username, father=node)
     if son_node:
         son = []
-        for son_node_ex in son_node:
+        for son_node_ex in son_node.all():
             son_node_ex = son_node_ex.name
-            tmp = {"name": son_node_ex, "son": []}
-            tmp["son"] = find_son(username, tmp["name"])
+            tmp = {"value": son_node_ex, "label": son_node_ex, "children": []}
+            tmp["children"] = find_son(username, tmp["label"])
             son.append(tmp)
         return son
     else:
@@ -257,8 +257,8 @@ def show_classification_tree(request):
     username = request.POST["username"]
     user = Users.objects.get(username=username)
     root = user.classification_tree_root
-    node = {"name": root, "son": find_son(username, root)}
-    response = {"node": node}
+    node = {"value": root, "label", "children": find_son(username, root)}
+    response = {"node": [node]}
     res = JsonResponse(response)
     return res
 

@@ -13,48 +13,36 @@ export default new Router(
         routes: [
             {
                 path: '/',
+                alias: '/login',
+                name: 'login',
+                component: login
+            },
+            {
+                path: '/user/:name',
                 name: 'index',
-                redirect:'/index',
                 component: index,
                 children: [
                     {
-                        path: 'showPdf',
+                        path: 'showPdf/:code',
+                        name: 'showPdf',
                         component: showPdf
                     },
                     {
                         path: 'tagTree',
+                        name: 'tagTree',
                         component: tagTree
                     },
                     {
                         path: 'fileInfo',
+                        name: 'fileInfo',
                         component: fileInfo
                     }
                 ]
             },
             {
-                path:'/index',
-                name:'index',
-                component:index
-            },
-            {
-                path: '/login',
-                name: 'login',
-                component: login
-            },
-            {
                 path: '/register',
                 name: 'register',
                 component: register
-            },
-            {
-                path: '/showPdfss',
-                name: 'showPdf',
-                component: showPdf
-            },
-            {
-                path: '/tagss',
-                name: 'tagTree',
-                component: tagTree
             }
         ]
     }

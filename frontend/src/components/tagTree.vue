@@ -1,18 +1,51 @@
 <template>
   <div class="tagTree">
     <div>
-      Current User: {{ userId }}
-      Current directory: {{ direc }}
+      Current User: {{ this.$route.params.name }}
     </div>
-    <div>>
-      <el-dialog>Tag List:</el-dialog>
-      <el-button @click="backward">Back</el-button>
-      <ul v-for="tag in tagList">
-        <li @click="nextTag(tag)">
-          <el-button>{{ tag }}</el-button>
-        </li>
-      </ul>
+
+    <div class="block">
+      <span class="demonstration">Classification Tree</span>
+      <el-cascader
+        :options="tree"
+        v-model="direc"
+        change-on-select="true">
+      </el-cascader>
     </div>
+    <div>
+      Current Class: {{ currentPath.join(': ') }}
+    </div>
+    <el-button @click=add_class>new class</el-button>
+    <el-button @click=add_file>add file</el-button>
+
+
+    <a v-if=addClass>
+      <v-input
+        placeholder="input class name"
+        v-model="newClass">
+      </v-input>
+      <v-button
+        @click=add_new_class>
+        +
+      </v-button>
+    </a>
+
+    <a v-if=addFile>
+    <v-input
+      placeholder="input title"
+      v-model="newFileTitle">
+    </v-input>
+    <v-input
+      placeholder="input file url"
+      v-model="newFileUrl">
+    </v-input>
+    <v-button
+      @click=add_new_file>
+      +
+    </v-button>
+    </a>
+
+
     <div>
       <el-dialog>File List:</el-dialog>
       <ul v-for="file in fileList">
@@ -23,109 +56,84 @@
     </div>
   </div>
 
+
 </template>
 
 <script>
-  export default {
-    name: 'tagTree',
-    data () {
-      return {
-        tagList: [],
-        fileList: [],
-        direc: 'cs',
-        userId: "10032",
-        getFail: false,
-      }
-    },
-    methods: {
-      backward: function () {
-        var oriDir = String(this.direc + '')
-        if (!this.direc || this.direc.length == 0) {
-          alert("Error: path is empty!");
-        } else {
-          var itemList = oriDir.split('.');
-          if (itemList.length == 1) {
-            alert("Error: this is root dir!");
+    export default {
+      name: 'tagTree',
+      data () {
+          return {
+              fileList: [],
+              userId: "10032",
+              tree: [],
+              direc: [],
+              addClass: false,
+              addFile: false,
+              newClass: "",
+              newFileTitle: "",
+              newFileUrl: ""
           }
-          else if (!itemList) {
-            alert("Error: no itemList. Current directory is: " + oriDir)
-          }
-          else {
-            var newDir = ''
-            for (var i = 0; i < itemList.length - 1; i++) {
-              if (i == 0) {
-                newDir = newDir + itemList[i]
-              } else {
-                newDir = newDir + '.' + itemList[i]
-              }
-            }
-            this.direc = newDir
-            this.showTags()
-            this.showFiles()
-            if (this.getFail) {
-              alert('Fail Next')
-              this.direc = oriDir
-              this.getFail = false
-            }
-          }
-        }
       },
-      nextTag: function (tag) {
-        var oriDir = String(this.direc + '')
-        console.log('Origin dir: ' + this.direc)
-        if (!this.direc || this.direc.length == 0) {
-          this.direc = String(tag)
-        } else {
-          this.direc = this.direc + '.' + String(tag)
-        }
-        this.showTags()
-        this.showFiles()
-        if (this.getFail == true) {
-          this.direc = oriDir
-          this.getFail = false
-        }
-      },
-      showTags () {
-        this.$http.get('http://127.0.0.1:8080/api/getTagList?userId=' + this.userId + '&currentPath=' + this.direc)
-          .then((response) => {
-            var res = JSON.parse(response.bodyText)
-            if (res['error_num'] == 0) {
-              this.tagList = res['tagList']
-            } else {
-              if (res['error_num'] == 1) {
-                this.tagList = []
-                console.log('Warning: no son directory!')
-              } else {
-                this.getFail = true
-                console.log('Error: no such directory!')
-              }
+        methods: {
+
+            showTags () {
+                this.$http.get('http://127.0.0.1:8080/api/show_classification_tree?username=' + this.$route.params.name)
+                    .then((response) => {
+                        var res = response;
+                        this.tree = res['node'];
+                    })
+            },
+            showFiles () {
+                this.$http.get('http://127.0.0.1:8080/api/show_classification_tree?username=' + this.userId)
+                    .then((response) => {
+                        var res = JSON.parse(response.bodyText)
+                        if (res['error_num'] == 0) {
+                            this.fileList = res['fileList']
+                        } else {
+                            console.log('Error: cannot get file list!')
+                            this.fileList = []
+                        }
+                    })
+            },
+            add_class () {
+                this.addClass = true;
+            },
+            add_new_class () {
+                var axios = require('axios')
+                var qs = require('qs')
+                axios.post('/api/add_classification',
+                           qs.stringify({ username: this.userId,
+                                          father_name: this.direc.join('.'),
+                                          name: this.newClass})
+                          )
+                    .then((response) => {
+                        this.showTags();
+                        this.addClass = false;
+                    });
             }
-          })
-      },
-      showFiles () {
-        this.$http.get('http://127.0.0.1:8080/api/getFileList?userId=' + this.userId + '&currentPath=' + this.direc)
-          .then((response) => {
-            var res = JSON.parse(response.bodyText)
-            if (res['error_num'] == 0) {
-              this.fileList = res['fileList']
-            } else {
-              console.log('Error: cannot get file list!')
-              this.fileList = []
+
+            add_file () {
+                this.addFile = true;
+            },
+            add_new_file () {
+                var axios = require('axios')
+                var qs = require('qs')
+
             }
-          })
-      },
-    },
-    mounted: function() {
+        },
+        mounted: function() {
       //这个是钩子函数
       //如果cartView函数要执行，必须先执行钩子函数
       //这个钩子函数完成了对cratView函数的调用
       //应该注意的是，使用mounted 并不能保证钩子函数中
       // 的 this.$el 在 document 中。为此还应该引入
       // Vue.nextTick/vm.$nextTick
-      this.$nextTick(function () {
-        this.showTags()
-        this.showFiles()
-      })
+            this.$nextTick(function () {
+                this.userId = this.$route.params.name;
+                this.showTags()
+                this.showFiles()
+            })
+        }
     }
-  }
 </script>
