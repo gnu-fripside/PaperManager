@@ -28,14 +28,13 @@ class Paper(models.Model):
     username = models.CharField(max_length=256)
     title = models.CharField(max_length=256)
     author = models.ManyToManyField("Author")
-    publish_time = models.DateTimeField(auto_now_add=False)
+    publish_time = models.DateTimeField(auto_now_add=False, NULL=True)
     add_time = models.DateTimeField(auto_now_add=True)
-    source = models.CharField(max_length=256)
+    source = models.CharField(max_length=256, NULL=True)
     url = models.CharField(max_length=256)
     hash_code = models.CharField(max_length=64)
     classification_tree_node = models.CharField(max_length=256)
     file_path = models.CharField(max_length=256)
-    log = models.CharField(max_length=256)
     read_status = models.IntegerField(default=0)
 
     def __str__(self):

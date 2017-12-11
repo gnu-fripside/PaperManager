@@ -111,17 +111,17 @@ def add_paper(request):
     response = {}
     username = request.POST["username"]
     title = request.POST["title"]
-    authors = request.POST["author"]
-    publish_time = request.POST["publish_time"]
-    source = request.POST["source"]
+    # authors = request.POST["author"]
+    # publish_time = request.POST["publish_time"]
+    # source = request.POST["source"]
     url = request.POST["url"]
     file_path = request.POST["file_path"]
     hash_code = paperDown(url, file_path)
     node_name = request.POST["node_name"]
     paper = Paper.objects.create(username=username, title=title,
-                                 publish_time=publish_time, source=source,
                                  url=url, hash_code=hash_code,
                                  classification_tree_node=node_name)
+    """
     for au in authors:
         author = Author.objects.filter(first_name=au["first_name"],
                                        last_name=au["last_name"],
@@ -132,12 +132,47 @@ def add_paper(request):
             new_author = Author.objects.create(first_name=au["first_name"], last_name=au["last_name"],
                                                email=au["email"])
             paper.author.add(new_author)
+    """
     response["error_num"] = 0
     response["msg"] = "success"
     res = JsonResponse(response)
     Log.objects.create(username=username, paper_title=title,
                        log="add paper "+title+" in "+node_name)
     return res
+
+
+def update_paper_info(request):
+    userid = request.POST["username"]
+    title = request.POST["title"]
+    publish_time = request.POST["publish_time"]
+    source = request.POST["source"]
+    author = request.POST["author"]
+    paper = Paper.objects.filter(username=userid, title=title)[0]
+    paper.publish_time = publish_time
+    paper.source = source
+    paper.save()
+    for au in author:
+        author_ex = Author.objects.filter(first_name=au['first_name'],
+                                          last_name=au['last_name'],
+                                          email=au['email'])
+        if author_ex:
+            paper.author.add(author[0])
+        else:
+            new_author = Author.objects.create(first_name=au['first_name'], last_name=au['last_name'],
+                                               email=au['email'])
+            paper.author.add(new_author)
+    response = {"error_num": 0, "msg": "success"}
+    return JsonResponse(response)
+
+
+def update_read_status(request):
+    username = request.GET.get("username")
+    paper_title = request.GET.get("paper_title")
+    paper = Paper.objects.filter(username=username, paper_title=paper_title)[0]
+    paper.read_status = request.GET.get("read_status")
+    paper.save()
+    response = {"error_num": 0, "msg": "success"}
+    return JsonResponse(response)
 
 
 def save_note(request):
@@ -183,6 +218,7 @@ def show_paper_detail(request):
     response["add_time"] = paper[0].add_time
     response["source"] = paper[0].source
     response["url"] = paper[0].url
+    response["read_status"] = paper[0].read_status
     res = JsonResponse(response)
     return res
 
@@ -198,7 +234,7 @@ def read_paper(request):
     title = request["title"]
     notes = Note.objects.filter(username=username, paper_title=title)
     note = []
-    for note_ex in notes:
+    for note_ex in notes.all():
         tmp = {"page": note_ex.paper_page, "content": note_ex.content}
         note.append(tmp)
     response["path"] = username+"/"+title
@@ -221,7 +257,7 @@ def show_paper_of_the_node(request):
     node = ClassificationTree.objects.get(username=username, name=node_name)
     papers = Paper.objects.filter(username=username, classification_tree_node=node)
     papers_title = []
-    for paper in papers:
+    for paper in papers.all():
         papers_title.append(paper.title)
     response["papers_title"] = papers_title
     res = JsonResponse(response)
@@ -273,9 +309,9 @@ def find_son_paper(username, node_name):
     sons = ClassificationTree.objects.filter(username=username, father=node_name)
     paper_title = []
     if sons:
-        for sons_ex in sons:
+        for sons_ex in sons.all():
             papers = Paper.objects.filter(username=username, classification_tree_node=sons_ex.name)
-            for paper in papers:
+            for paper in papers.all():
                 paper_title.append(paper.title)
             paper_title.extend(find_son_paper(username, sons_ex.name))
     return paper_title
@@ -292,7 +328,7 @@ def show_paper_of_the_subtree(request):
     papers = Paper.objects.filter(username=username, classification_tree_node=node_name)
     papers_title = []
     if papers:
-        for paper in papers:
+        for paper in papers.all():
             papers_title.append(paper.title)
     papers_title.extend(find_son_paper(username, node_name))
     return papers_title

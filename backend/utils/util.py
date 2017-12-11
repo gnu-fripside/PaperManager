@@ -36,26 +36,6 @@ def AddPaper(userid, title, author, publish_time, tags, source, url, hash_code, 
     return
 
 
-def UpdatePaperInfo(userid, title, author, publish_time, tags, source, url, hash_code, filePath):
-    paper = Paper.objects.filter(username=userid, title=title)[0]
-    paper.publish_time = publish_time
-    paper.source = source
-    paper.url = url
-    paper.hash_code = hash_code
-    paper.file_path = filePath
-    paper.classification_tree_node = tags
-    paper.author.clear()
-    for au in author:
-        author_ex = Author.objects.filter(first_name=au['first_name'],
-                                       last_name=au['last_name'],
-                                       email=au['email'])
-        if author_ex:
-            paper.author.add(author[0])
-        else:
-            new_author = Author.objects.create(first_name=au['first_name'], last_name=au['last_name'],
-                                               email=au['email'])
-            paper.author.add(new_author)
-    return
 
 """
 function movePaper(userid, paperNode, newTag):
