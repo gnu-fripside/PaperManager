@@ -245,19 +245,22 @@ def read_paper(request):
     :return: response
     """
     response = {}
-    username = request["username"]
-    title = request["title"]
-    paper = Paper.objects.filter(username=username, title=title)[0]
-    notes = Note.objects.filter(username=username, paper_title=title)
+    username = request.GET.get("username")
+    hash_code = request.GET.get("hash_code")
+    paper = Paper.objects.filter(username=username, hash_code=hash_code)[0]
+    notes = Note.objects.filter(username=username, paper_title=paper.title)
     note = []
     for note_ex in notes.all():
         tmp = {"page": note_ex.paper_page, "content": note_ex.content}
         note.append(tmp)
-    response["path"] = paper.file_path
+    with open(os.path.join(paper.file_path, paper.hash_code+".pdf"), "rb") as f:
+        paper_context = f.read()
+    response["paper_context"] = paper_context
     response["note"] = note
+    response["read_status"] = paper.read_status
     res = JsonResponse(response)
-    Log.objects.create(username=username, paper_title=title,
-                       log="read paper "+title)
+    Log.objects.create(username=username, paper_title=paper.title,
+                       log="read paper "+paper.title)
     return res
 
 
