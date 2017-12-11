@@ -72,7 +72,7 @@
 
   /* 主内容区 */
   main{    display: -webkit-box;  display: -ms-flexbox;  display: flex;  min-height: 800px;  border: solid 10px #E9ECF1;  background-color: #FCFCFC;  }
-  main .main-left{text-align: center;width: 200px;float: left;}
+  main .main-left{text-align: center;width: 100px;float: left;}
   main .main-right{-webkit-box-flex: 1;  -ms-flex: 1;  flex: 1;  background-color: #fff; padding: 10px 10px; }
   main .el-menu{background-color: transparent!important;}
 </style>
