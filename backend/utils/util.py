@@ -168,6 +168,8 @@ def PaperNodePack(paper_node, userid, tempDir, outputDir, note, log):
     with open(log_path, "w") as f:
         f.write(str(log))
         f.close()
+    if not os.path.exists(outputDir):
+        os.makedirs(outputDir)
     outputPath = os.path.join(outputDir, str(userid)+"_"+str(int(time.time())) + ".zip")
     with zipfile.ZipFile(outputPath, "w",
                          zipfile.ZIP_DEFLATED) as f:
@@ -176,7 +178,7 @@ def PaperNodePack(paper_node, userid, tempDir, outputDir, note, log):
                 f.write(os.path.join(dirPath, filename))
         f.close()
     shutil.rmtree(path)
-    return outputPath
+    return outputPath.split("/")[-1]
 
 def PaperPackLite(currentPath, paper_file, userid, tempDir, outputDir):
     pass

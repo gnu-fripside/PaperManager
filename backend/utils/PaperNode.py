@@ -55,11 +55,11 @@ class PaperNode:
         dictPaperNode = {}
         dictPaperNode["title"] = self.title
         dictPaperNode["author"] = self.author
-        dictPaperNode["publishtime"] = str(self.time)
+        dictPaperNode["publishtime"] = str(self.publishtime)
         dictPaperNode["addtime"] = str(self.addtime)
         dictPaperNode["tags"] = []
         for i in range(len(self.tags)):
-            dictPaperNode["tags"][str(i + 1)] = self.tags[i]
+            dictPaperNode["tags"].append(self.tags[i])
         dictPaperNode["source"] = self.source
         dictPaperNode["url"] = self.url
         dictPaperNode["filePath"] = self.filePath

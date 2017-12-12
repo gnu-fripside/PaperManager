@@ -454,8 +454,9 @@ def paper_node_pack(request):
     :return: response
     """
     username = request.GET.get("username")
-    paper_title = request.GET.get("paper_title")
-    paper = Paper.objects.filter(username=username, paper_title=paper_title)[0]
+    hash_code = request.GET.get("hash_code")
+    paper = Paper.objects.filter(username=username, hash_code=hash_code)[0]
+    paper_title = paper.title
     notes = Note.objects.filter(username=username, paper_title=paper_title)
     logs = Log.objects.filter(username=username, paper_title=paper_title)
     authors = []
@@ -465,8 +466,9 @@ def paper_node_pack(request):
                "email": author_ex.email}
         authors.append(tmp)
     paper_node = PaperNode(username, paper_title, authors, paper.publish_time, paper.add_time,
-                           paper.classification_tree_node, paper.source, paper.url, paper.file_path,
+                           paper.classification_tree_node, paper.source, paper.url, paper.file_path+"/"+paper.hash_code+".pdf",
                            paper.read_status)
+    print("misakaFind",paper.file_path)
     note = []
     for note_ex in notes.all():
         tmp = {"username": username, "paper_title": paper_title,
@@ -479,13 +481,13 @@ def paper_node_pack(request):
                "log_context": logs_ex.log,
                "add_time": logs_ex.add_time}
         log.append(tmp)
-    temp_dir = "../resource/tags/tmp"
-    output_dir = "../resource/tags/"+username+"/outputDir"
+    temp_dir = "backend/resource/tags/"+username+"/tmp"
+    output_dir = "backend/resource/tags/"+username+"/outputDir"
     the_file_name = util.PaperNodePack(paper_node, username, temp_dir, output_dir, note, log)
-    the_file_name = "backend/resource/tags/"+username+"/"+the_file_name
+    the_file_name = "backend/resource/tags/"+username+"/outputDir/"+the_file_name
 
     def file_iterator(output_path, chunk_size=512):
-        with open(output_path) as f:
+        with open(output_path,"rb") as f:
             while True:
                 c = f.read(chunk_size)
                 if c:
