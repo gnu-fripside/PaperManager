@@ -115,32 +115,35 @@ def add_paper(request):
     # authors = request.POST["author"]
     # publish_time = request.POST["publish_time"]
     # source = request.POST["source"]
-    url = request.POST["links"]
-    file_path = "resource/tags/"+username+"/"+request.POST["file_path"]
-    hash_code = paperDown(url, file_path)
-    node_name = request.POST["node_name"]
-    paper = Paper.objects.create(username=username, title=title,
-                                 url=url, hash_code=hash_code,
-                                 file_path=file_path,
-                                 classification_tree_node=node_name)
-    for i in range(100):
-        Note.objects.create(username=username, paper_title=title, paper_page=i, content="")
-    note = Note.objects.filter(username=username, paper_title=title)
-    print(note[0])
-    """
-    for au in authors:
-        author = Author.objects.filter(first_name=au["first_name"],
-                                       last_name=au["last_name"],
-                                       email=au["email"])
-        if author:
-            paper.author.add(author[0])
-        else:
-            new_author = Author.objects.create(first_name=au["first_name"], last_name=au["last_name"],
-                                               email=au["email"])
-            paper.author.add(new_author)
-    """
-    response["error_num"] = 0
-    response["msg"] = "success"
+    if Paper.objects.filter(username=username, title=title):
+        response["msg"] = "the paper existed"
+        response["error_num"] = 1
+    else:
+        url = request.POST["links"]
+        file_path = "resource/tags/"+username+"/"+request.POST["file_path"]
+        hash_code = paperDown(url, file_path)
+        node_name = request.POST["node_name"]
+        paper = Paper.objects.create(username=username, title=title,
+                                    url=url, hash_code=hash_code,
+                                    file_path=file_path,
+                                    classification_tree_node=node_name)
+        for i in range(100):
+            Note.objects.create(username=username, paper_title=title, paper_page=i, content="")
+        note = Note.objects.filter(username=username, paper_title=title)
+        """
+        for au in authors:
+            author = Author.objects.filter(first_name=au["first_name"],
+                                        last_name=au["last_name"],
+                                        email=au["email"])
+            if author:
+                paper.author.add(author[0])
+            else:
+                new_author = Author.objects.create(first_name=au["first_name"], last_name=au["last_name"],
+                                                email=au["email"])
+                paper.author.add(new_author)
+        """
+        response["error_num"] = 0
+        response["msg"] = "success"
     res = JsonResponse(response)
     Log.objects.create(username=username, paper_title=title,
                        log="add paper "+title+" in "+node_name)
@@ -157,17 +160,21 @@ def update_paper_info(request):
     title = request.POST["title"]
     publish_time = request.POST["publish_time"]
     source = request.POST["source"]
+    print('authors: ', request.POST)
     author = request.POST["author"]
+    author = eval(author)
+    print(author)
     paper = Paper.objects.filter(username=userid, title=title)[0]
     paper.publish_time = publish_time
     paper.source = source
+    paper.author.clear()
     paper.save()
     for au in author:
         author_ex = Author.objects.filter(first_name=au['first_name'],
                                           last_name=au['last_name'],
                                           email=au['email'])
         if author_ex:
-            paper.author.add(author[0])
+            paper.author.add(author_ex[0])
         else:
             new_author = Author.objects.create(first_name=au['first_name'], last_name=au['last_name'],
                                                email=au['email'])
@@ -240,6 +247,11 @@ def show_paper_detail(request):
     response["url"] = paper[0].url
     response["read_status"] = paper[0].read_status
     response["hash_code"] = paper[0].hash_code
+    response["author"] = []
+    authors = paper[0].author.all()
+    for authors_ex in authors:
+        tmp = {"first_name": authors_ex.first_name, "last_name": authors_ex.last_name, "email": authors_ex.email}
+        response["author"].append(tmp)
     res = JsonResponse(response)
     return res
 

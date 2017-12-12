@@ -13,7 +13,7 @@ urlpatterns = [
     url(r'^read_paper$', views.read_paper),
     url(r'^show_paper_of_the_node$', views.show_paper_of_the_node),
     url(r'^show_classification_tree$', views.show_classification_tree),
-    url(r'^SubTreePaperPack$', views.SubTreePaperPack),
+    url(r'^sub_tree_paper_pack$', views.sub_tree_paper_pack),
     url(r'^paper_node_pack$', views.paper_node_pack),
     url(r'^get_paper$', views.get_paper)
 ]

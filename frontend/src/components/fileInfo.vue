@@ -15,7 +15,7 @@
         </el-input>
       </el-form-item>
       Author:
-      <el-row v-for="author in Paper.authors">
+      <el-row v-for="author in Paper.author">
         <el-col :span="6">
           <el-form-item
             label="first name"
@@ -108,7 +108,7 @@
                 Paper: {
                     username: "",
                     title: "",
-                    authors: [
+                    author: [
                         {
                             first_name: "alah",
                             last_name: "uhak",
@@ -153,11 +153,12 @@
                 this.Paper.classification_tree_nodes = this.classes.join('.');
             },
             deleteAuthor: function (author) {
-                for (var i = 0; i < this.Paper.authors.length; i++) {
-                    if (this.Paper.authors[i].first_name == author.first_name &&
-                        this.Paper.authors[i].last_name == author.last_name &&
-                        this.Paper.authors[i].email == author.email) {
-                        this.Paper.authors.splice(i, 1);
+                for (var i = 0; i < this.Paper.author.length; i++) {
+                    if (this.Paper.author[i].first_name == author.first_name &&
+                        this.Paper.author[i].last_name == author.last_name &&
+                        this.Paper.author[i].email == author.email) {
+                        this.Paper.author.splice(i, 1);
+                        this.$forceUpdate();
                     }
                 }
             },
@@ -167,18 +168,29 @@
                     last_name: "",
                     email: ""
                 };
-                this.Paper.authors.push(newAuthor);
+                if (this.Paper.author) {
+                    this.Paper.author.push(newAuthor);
+                    this.$forceUpdate();
+                } else {
+                    this.Paper.author = [newAuthor];
+                    this.$forceUpdate();
+                }
             },
             submitForm: function () {
                 var axios = require('axios');
                 var qs = require('qs');
+                var pinfo = this.Paper;
+                pinfo.author = JSON.stringify(pinfo.author);
                 axios.post('/api/update_paper_info',
-                           qs.stringify(this.Paper)
+                           qs.stringify(pinfo)
                           )
                     .then((response) => {
                         var res = response.data;
                         if (res['error_num'] == 0)
-                            alert('Accepted');
+                        //    alert('Accepted');
+                            this.$router.push({
+                                name: 'tagTree',
+                                params: {name: this.$route.params.name}});
                         else
                             alert(res['msg']);
                     });

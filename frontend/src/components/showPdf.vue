@@ -4,7 +4,8 @@
       <el-radio-button label="0">Unread</el-radio-button>
       <el-radio-button label="1">Roughly</el-radio-button>
       <el-radio-button label="2">Clearly</el-radio-button>
-    </el-radio-group>
+    </el-radio-group >
+
 
     <el-button @click="upPage">up</el-button>
     <el-button @click="downPage">down</el-button>
@@ -92,6 +93,7 @@ export default {
         },
         changeContent: function (e) {
             this.content = e.target.value;
+            this.updateFuss();
         },
 
         upPage () {
@@ -125,6 +127,7 @@ export default {
                 })
         },
 
+
         read_paper () {
             var axios = require('axios');
             var qs = require('qs');
@@ -140,7 +143,7 @@ export default {
                     this.note = gnote;
                     this.content = gnote[1].content;
                     this.read_status = response["read_status"];
-                    //console.log(this.note);
+                   
                 });
         },
 
