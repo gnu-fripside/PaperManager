@@ -24,4 +24,4 @@ def paperDown(arxivID, paperDir):
         f.close()
     return hash
 if __name__ == "__main__":
-    print(paperDown("1407.0028","paper"))
+    print(paperDown("https://arxiv.org/pdf/1703.00848.pdf","paper"))
