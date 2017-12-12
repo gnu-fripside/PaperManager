@@ -88,7 +88,7 @@ export default {
         update: function (e) {
             this.input = e.target.value;
         },
-        exportFile: {}
+        exportFile: {},
 
         upPage () {
             if (this.page < this.numPages) {

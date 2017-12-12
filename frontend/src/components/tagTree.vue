@@ -13,36 +13,37 @@
       </el-cascader>
     </div>
     <div>
-      Current Class: {{ currentPath.join(': ') }}
+      Current Class: {{ direc.join(': ') }}
     </div>
     <el-button @click=add_class>new class</el-button>
     <el-button @click=add_file>add file</el-button>
 
 
     <a v-if=addClass>
-      <v-input
-        placeholder="input class name"
-        v-model="newClass">
-      </v-input>
-      <v-button
+        <el-input
+          placeholder="input class name"
+          v-model="newClass">
+        </el-input>
+
+      <el-button
         @click=add_new_class>
         +
-      </v-button>
+      </el-button>
     </a>
 
     <a v-if=addFile>
-    <v-input
+    <el-input
       placeholder="input title"
       v-model="newFileTitle">
-    </v-input>
-    <v-input
+    </el-input>
+    <el-input
       placeholder="input file url"
       v-model="newFileUrl">
-    </v-input>
-    <v-button
+    </el-input>
+    <el-button
       @click=add_new_file>
       +
-    </v-button>
+    </el-button>
     </a>
 
     <el-row :span="20">
@@ -73,14 +74,20 @@
 
       <el-col :span="10">
         <el-dialog>Detail:</el-dialog>
+        <p>
+          title: {{ fileInfo.title }}
+        </p>
+        <p>
+          url: {{ fileInfo.url }}
+        </p>
         <router-link
           :to="{ name: 'showPdf',
-               params: {hash_code: file.hash_code}}">
+               params: {hash_code: fileInfo.hash_code}}">
           <el-button> Read Paper! </el-button>
         </router-link>
         <router-link
           :to="{ name: 'fileInfo',
-               params: {hash_code: file.hash_code}}">
+               params: {hash_code: fileInfo.hash_code}}">
           <el-button> Change Info </el-button>
         </router-link>
 
@@ -98,7 +105,7 @@ export default {
       name: 'tagTree',
       data () {
           return {
-              fileInto: {},
+              fileInfo: {},
               fileList: [],
               userId: "10032",
               tree: [],
@@ -111,11 +118,10 @@ export default {
           }
       },
       methods: {
-
             showTags () {
-                this.$http.get('/api/show_classification_tree?username=' + this.$route.params.name)
+                this.$http.get("/api/show_classification_tree?username=" + this.$route.params.name)
                     .then((response) => {
-                        var res = response;
+                        var res = response.data;
                         this.tree = res['node'];
                     })
             },
@@ -125,7 +131,7 @@ export default {
                                           classification_node: this.direc[this.direc.length - 1]})
                           )
                     .then((response) => {
-                        var res = JSON.parse(response.bodyText)
+                        var res = response.data;
                         if (res['error_num'] == 0) {
                             this.fileList = res['papers_title']
                         } else {
@@ -143,7 +149,8 @@ export default {
                                           father_name: this.direc.join('.'),
                                           name: this.newClass})
                           )
-                    .then((response) => {
+                    .then((responses) => {
+                        var response = responses.data;
                         if (response["error_num"] == 0) {
                             this.showTags();
                             this.addClass = false;
@@ -165,11 +172,11 @@ export default {
                                          node_name: this.direc[this.direc.length - 1]})
                           )
                     .then((response) => {
-                        if (response["error_num"] == 0) {
+                        if (response.data["error_num"] == 0) {
                             this.showFile();
                             this.addFile = false;
                         } else {
-                            console.log(response["msg"]);
+                            console.log(response.data["msg"]);
                         }
                     })
 
@@ -181,10 +188,10 @@ export default {
                                          username: this.userId})
                           )
                     .then((response) => {
-                        if (response["error_num"] == 0) {
-                            this.fileInfo = response;
+                        if (response.data["error_num"] == 0) {
+                            this.fileInfo = response.data;
                         } else {
-                            console.log(response["msg"]);
+                            console.log(response.data["msg"]);
                         }
                     })
             }
@@ -199,7 +206,6 @@ export default {
             this.$nextTick(function () {
                 this.userId = this.$route.params.name;
                 this.showTags()
-                this.showFiles()
             })
         }
     }

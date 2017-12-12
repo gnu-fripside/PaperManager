@@ -73,7 +73,7 @@ def user_logout(request):
     res = JsonResponse(response)
     return res
 
-
+@csrf_exempt 
 def add_classification(request):
     """
     add node in the classification tree
@@ -101,7 +101,7 @@ def add_classification(request):
     res = JsonResponse(response)
     return res
 
-
+@csrf_exempt 
 def add_paper(request):
     """
     add paper in one node of the classification tre
@@ -141,7 +141,7 @@ def add_paper(request):
                        log="add paper "+title+" in "+node_name)
     return res
 
-
+@csrf_exempt 
 def update_paper_info(request):
     """
     update the paper info
@@ -189,7 +189,7 @@ def update_read_status(request):
                        log="update the read_status of " + paper.title)
     return JsonResponse(response)
 
-
+@csrf_exempt 
 def save_note(request):
     """
     add and change node for a paper
@@ -218,7 +218,7 @@ def save_note(request):
                        log="add note in "+paper.title+" page"+paper_page)
     return res
 
-
+@csrf_exempt 
 def show_paper_detail(request):
     """
     show the paper detail
@@ -226,12 +226,11 @@ def show_paper_detail(request):
     :return: response
     """
     response = {"error_num": 0, "msg": "success"}
-    title = request.POST["title"]
+    hash_code = request.POST["hash_code"]
     username = request.POST["username"]
-    response["title"] = title
-    paper = Paper.objects.filter(username=username, title=title)
+    paper = Paper.objects.filter(username=username, hash_code=hash_code)
+    response["title"] = paper[0].title
     response["publish_time"] = paper[0].publish_time
-    response["add_time"] = paper[0].add_time
     response["source"] = paper[0].source
     response["url"] = paper[0].url
     response["read_status"] = paper[0].read_status
@@ -270,7 +269,7 @@ def get_paper(request):
     paper = Paper.objects.filter(username=username, hash_code=hash_code)[0]
     return FileResponse(open(os.path.join(paper.file_path, paper.hash_code+".pdf"), "rb").read())
 
-
+@csrf_exempt 
 def show_paper_of_the_node(request):
     """
     show the paper in the node
@@ -310,14 +309,16 @@ def find_son_node(username, node):
     else:
         return []
 
-
+@csrf_exempt 
 def show_classification_tree(request):
     """
     show the classification tree
     :param request: request
     :return: response
     """
-    username = request.POST["username"]
+    username = request.GET.get("username")
+    username = username.split('"')[0]
+    print(username)
     user = Users.objects.get(username=username)
     root = user.classification_tree_root
     node = {"value": root, "label": root, "children": find_son_node(username, root)}
@@ -343,7 +344,7 @@ def find_son_paper(username, node_name):
             paper_title.extend(find_son_paper(username, sons_ex.name))
     return paper_title
 
-
+@csrf_exempt 
 def show_paper_of_the_subtree(request):
     """
     show the paper list of the subtree

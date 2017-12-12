@@ -1,13 +1,13 @@
 <template>
     <div class="fileInfo">
     <el-form :model="Paper" :rules="rules" ref="Paper" label-width="100px" class="paperInfo">
-      <el-form-item label="Class" prop="class">
+      <!-- <el-form-item label="Class" prop="class">
         <el-cascader
           :options="classTree"
           v-model="classes"
           @change="changeClass">
         </el-cascader>
-      </el-form-item>
+      </el-form-item> -->
       <el-form-item label="Title" prop="title">
         <el-input
           :placeholder="Paper.title"
@@ -124,12 +124,14 @@
                     add_time: "",
                     source: "",
                     url: "",
-                    classification_tree_node: "",
+                    // classification_tree_node: "",
                     log: ""
                 },
+                /*
                 classTree: [
                 ],
                 classes: [],
+                */
                 rules: {
                     title: [
                         { required: true, message: 'title cannot be empty', trigger: 'blur' }
@@ -142,10 +144,12 @@
                     ],
                     url: [
                         { required: true, message: 'url cannot be empty', trigger: 'blur' }
-                    ],
-                    classes: [
+                    ]
+                    /*
+                    ,classes: [
                         { type: 'array', required: true, message: 'class cannot be empty', trigger: 'change' }
                     ]
+                    */
                 }
             };
         },
@@ -173,7 +177,7 @@
             submitForm: function () {
                 var axios = require('axios');
                 var qs = require('qs');
-                axios.post('/api/login',
+                axios.post('/api/update_paper_info',
                            qs.stringify(this.Paper)
                           )
                     .then((response) => {
@@ -183,12 +187,25 @@
                         else
                             alert(res['msg']);
                     });
+            },
+            getForm: function () {
+                var axios = require('axios');
+                var qs = require('qs');
+                axios.post('/api/show_paper_detail',
+                           qs.stringify({username: this.$route.params.name,
+                                         hash_code: this.$route.params.hash_code})
+                          )
+                    .then((response) => {
+                        this.Paper = response.data;
+                        Paper.username = this.$route.params.name;
+                    });
             }
         },
 
         mounted: function() {
             this.$nextTick(function () {
-                this.classes = this.Paper.classification_tree_node.split('.');
+                // this.classes = this.Paper.classification_tree_node.split('.');
+                getForm();
             });
         }
     }

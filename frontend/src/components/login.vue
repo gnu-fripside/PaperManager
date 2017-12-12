@@ -31,7 +31,7 @@
       }
     },
     methods: {
-    /*
+    
       login: function () {
         var axios = require('axios')
         var qs = require('qs')
@@ -55,12 +55,12 @@
             }
           })
       },
-    */
+    /*
         login: function () {
             this.status = 'succeed'
             let expireDays = 1000 * 60 * 60 * 24 * 30;
             this.$router.push({name: 'index', params: {name: this.form.username}});
-        }, 
+        },*/ 
       register: function () {
         this.$router.push({path:'/register'})
       },
