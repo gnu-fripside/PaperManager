@@ -93,7 +93,6 @@ export default {
         },
         changeContent: function (e) {
             this.content = e.target.value;
-            this.updateFuss();
         },
 
         upPage () {
