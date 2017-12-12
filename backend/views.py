@@ -1,4 +1,4 @@
-from django.http import JsonResponse, FileResponse
+from django.http import JsonResponse, FileResponse, StreamingHttpResponse
 from django.core import serializers
 from django.contrib.auth import authenticate, login, logout
 from .utils import util
@@ -374,18 +374,32 @@ def getFileList(request):
     response = util.getFileList(userId, currentPath)
     return JsonResponse(response)
 
-def SubTreePaperPack(request):
+
+def sub_tree_paper_pack(request):
     """
     pack the sub tree paper
     :param request: request
     :return: response
     """
-    userId = request.GET.get("userId")
-    currentPath = request.GET.get("currentPath")
-    tempDir = "../resource/temp"
-    outputDir = "../resource/tags/"+userId+"/outputDir"
-    outputpath = util.SubTreePack(currentPath, userId, tempDir, outputDir)
-    return "http://127.0.0.1:8080/backend/resource/tags/"+userId+"/"+outputpath
+    username = request.GET.get("username")
+    current_path = request.GET.get("currentPath")
+    temp_dir = "../resource/temp"
+    output_dir = "../resource/tags/"+username+"/outputDir"
+    the_file_name = util.SubTreePack(current_path, username, temp_dir, output_dir)
+    the_file_name = "backend/resource/tags/" + username + "/" + the_file_name
+
+    def file_iterator(output_path, chunk_size=512):
+        with open(output_path) as f:
+            while True:
+                c = f.read(chunk_size)
+                if c:
+                    yield c
+                else:
+                    break
+    response = StreamingHttpResponse(file_iterator(the_file_name))
+    response['Content-Type'] = 'application/octet-stream'
+    response['Content-Disposition'] = 'attachment;filename="{0}"'.format(the_file_name)
+    return response
 
 
 def paper_node_pack(request):
@@ -394,34 +408,48 @@ def paper_node_pack(request):
     :param request: request
     :return: response
     """
-    userId = request.GET.get("userId")
+    username = request.GET.get("username")
     paper_title = request.GET.get("paper_title")
-    paper = Paper.objects.filter(username=userId, paper_title=paper_title)[0]
-    notes = Note.objects.filter(username=userId, paper_title=paper_title)
-    logs = Log.objects.filter(username=userId, paper_title=paper_title)
+    paper = Paper.objects.filter(username=username, paper_title=paper_title)[0]
+    notes = Note.objects.filter(username=username, paper_title=paper_title)
+    logs = Log.objects.filter(username=username, paper_title=paper_title)
     authors = []
     for author_ex in paper.author.all():
         tmp = {"first_name": author_ex.first_name,
                "last_name": author_ex.last_name,
                "email": author_ex.email}
         authors.append(tmp)
-    paper_node = PaperNode(userId, paper_title, authors, paper.publish_time, paper.add_time,
+    paper_node = PaperNode(username, paper_title, authors, paper.publish_time, paper.add_time,
                            paper.classification_tree_node, paper.source, paper.url, paper.file_path,
                            paper.read_status)
     note = []
     for note_ex in notes.all():
-        tmp = {"username": userId, "paper_title": paper_title,
+        tmp = {"username": username, "paper_title": paper_title,
                "paper_page": note_ex.paper_page,
                "context": note_ex.content}
         note.append(tmp)
     log = []
     for logs_ex in logs.all():
-        tmp = {"username": userId, "paper_title": logs_ex.paper_title,
+        tmp = {"username": username, "paper_title": logs_ex.paper_title,
                "log_context": logs_ex.log,
                "add_time": logs_ex.add_time}
         log.append(tmp)
-    tempDir = "../resource/tags/tmp"
-    outputDir = "../resource/tags/"+userId+"/outputDir"
-    output_path = util.PaperNodePack(paper_node, userId, tempDir, outputDir, note, log)
-    return "http://127.0.0.1:8080/backend/resource/tags/"+userId+"/"+output_path
+    temp_dir = "../resource/tags/tmp"
+    output_dir = "../resource/tags/"+username+"/outputDir"
+    the_file_name = util.PaperNodePack(paper_node, username, temp_dir, output_dir, note, log)
+    the_file_name = "backend/resource/tags/"+username+"/"+the_file_name
+
+    def file_iterator(output_path, chunk_size=512):
+        with open(output_path) as f:
+            while True:
+                c = f.read(chunk_size)
+                if c:
+                    yield c
+                else:
+                    break
+
+    response = StreamingHttpResponse(file_iterator(the_file_name))
+    response['Content-Type'] = 'application/octet-stream'
+    response['Content-Disposition'] = 'attachment;filename="{0}"'.format(the_file_name)
+    return response
 
