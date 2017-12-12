@@ -110,11 +110,6 @@
                     title: "",
                     authors: [
                         {
-                            first_name: "aa",
-                            last_name: "b",
-                            email: "c"
-                        },
-                        {
                             first_name: "alah",
                             last_name: "uhak",
                             email: "bah"
@@ -197,7 +192,7 @@
                           )
                     .then((response) => {
                         this.Paper = response.data;
-                        Paper.username = this.$route.params.name;
+                        this.Paper.username = this.$route.params.name;
                     });
             }
         },
@@ -205,7 +200,7 @@
         mounted: function() {
             this.$nextTick(function () {
                 // this.classes = this.Paper.classification_tree_node.split('.');
-                getForm();
+                this.getForm();
             });
         }
     }

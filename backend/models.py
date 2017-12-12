@@ -28,7 +28,7 @@ class Paper(models.Model):
     username = models.CharField(max_length=256)
     title = models.CharField(max_length=256)
     author = models.ManyToManyField("Author")
-    publish_time = models.DateTimeField(auto_now_add=True)
+    publish_time = models.DateTimeField(auto_now_add=False, null=True)
     add_time = models.DateTimeField(auto_now_add=True)
     source = models.CharField(max_length=256, null=True)
     url = models.CharField(max_length=256)

@@ -88,6 +88,10 @@
         <p>
           url: {{ fileInfo.url }}
         </p>
+        <p>
+          tag: {{ fileInfo.read_status }}
+        </p>
+    
         <router-link
           :to="{ name: 'showPdf',
                params: {hash_code: fileInfo.hash_code}}">
@@ -187,7 +191,6 @@ export default {
                             console.log(response.data["msg"]);
                         }
                     })
-
             },
             view_file (row) {
                 var row_title = row["paper_title"];
@@ -206,12 +209,6 @@ export default {
             }
         },
         mounted: function() {
-      //这个是钩子函数
-      //如果cartView函数要执行，必须先执行钩子函数
-      //这个钩子函数完成了对cratView函数的调用
-      //应该注意的是，使用mounted 并不能保证钩子函数中
-      // 的 this.$el 在 document 中。为此还应该引入
-      // Vue.nextTick/vm.$nextTick
             this.$nextTick(function () {
                 this.userId = this.$route.params.name;
                 this.showTags()
