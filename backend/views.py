@@ -1,4 +1,4 @@
-from django.http import JsonResponse
+from django.http import JsonResponse, FileResponse
 from django.core import serializers
 from django.contrib.auth import authenticate, login, logout
 from .utils import util
