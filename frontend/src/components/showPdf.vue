@@ -12,7 +12,8 @@
         <el-button @click="rotate += 90">&#x27F3;</el-button>
         <el-button @click="rotate -= 90">&#x27F2;</el-button>
         <el-button @click="$refs.pdf.print()">print</el-button>
-        <el-button @click="exportFile">export</el-button>
+        <!--el-button @click="exportFile">export</el-button-->
+        <el-button> <a :href="exportSrc"> export </a></el-button>
 
         <div>
           <el-row :gutter="20">
@@ -64,6 +65,7 @@ export default {
         return {
             radio: "0",
             src:"",
+            exportSrc: "",
             loadedRatio: 0,
             page: 1,
             numPages: 0,
@@ -83,8 +85,6 @@ export default {
         }
     },
     methods: {
-        exportFile () {},
-
         password: function(updatePassword, reason) {
             updatePassword(prompt('password is "test"'));
         },
@@ -94,6 +94,7 @@ export default {
         changeContent: function (e) {
             this.content = e.target.value;
         },
+
 
         upPage () {
             if (this.page < this.numPages) {
@@ -167,10 +168,14 @@ export default {
     },
     mounted: function() {
         this.$nextTick(function () {
-          this.src = ( "http://127.0.0.1:8080/api/get_paper?username="
+            this.src = ( "http://127.0.0.1:8080/api/get_paper?username="
                        + this.$route.params.name
                        + "&hash_code="
                        + this.$route.params.hash_code);
+            this.exportSrc = ('http://127.0.0.1:8080/api/paper_node_pack?username='
+                              + this.$route.params.name
+                              + '&hash_code='
+                              + this.$route.params.hash_code);
             this.initia();
       })
     }
