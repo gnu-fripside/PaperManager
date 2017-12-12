@@ -45,25 +45,60 @@
     </v-button>
     </a>
 
+    <el-row :span="20">
+      <el-col :span="10">
+        <el-dialog>File List:</el-dialog>
+        <el-table
+          :data="fileList"
+          height="250"
+          border
+          style="width: 100%">
+          <el-table-column
+            prop="title"
+            label="Title"
+            width="180">
+          </el-table-column>
+          <el-table-column
+            fixed="right"
+            label="operation"
+            width="100">
+            <template slot-scope="scope">
+              <el-button @click="view_file(scope.row)" type="text" size="small">
+                view
+              </el-button>
+            </template>
+          </el-table-column>
+        </el-table>
+      </el-col>
 
-    <div>
-      <el-dialog>File List:</el-dialog>
-      <ul v-for="file in fileList">
-        <li>
-          <el-button>{{ file }}</el-button>
-        </li>
-      </ul>
-    </div>
+      <el-col :span="10">
+        <el-dialog>Detail:</el-dialog>
+        <router-link
+          :to="{ name: 'showPdf',
+               params: {hash_code: file.hash_code}}">
+          <el-button> Read Paper! </el-button>
+        </router-link>
+        <router-link
+          :to="{ name: 'fileInfo',
+               params: {hash_code: file.hash_code}}">
+          <el-button> Change Info </el-button>
+        </router-link>
+
+      </el-col>
+    </el-row>
   </div>
-
-
 </template>
 
 <script>
-    export default {
+var axios = require('axios');
+var qs = require('qs');
+
+export default {
+
       name: 'tagTree',
       data () {
           return {
+              fileInto: {},
               fileList: [],
               userId: "10032",
               tree: [],
@@ -75,21 +110,24 @@
               newFileUrl: ""
           }
       },
-        methods: {
+      methods: {
 
             showTags () {
-                this.$http.get('http://127.0.0.1:8080/api/show_classification_tree?username=' + this.$route.params.name)
+                this.$http.get('/api/show_classification_tree?username=' + this.$route.params.name)
                     .then((response) => {
                         var res = response;
                         this.tree = res['node'];
                     })
             },
             showFiles () {
-                this.$http.get('http://127.0.0.1:8080/api/show_classification_tree?username=' + this.userId)
+                axios.post('/api/show_paper_of_the_node?username=',
+                           qs.stringify({ username: this.userId,
+                                          classification_node: this.direc[this.direc.length - 1]})
+                          )
                     .then((response) => {
                         var res = JSON.parse(response.bodyText)
                         if (res['error_num'] == 0) {
-                            this.fileList = res['fileList']
+                            this.fileList = res['papers_title']
                         } else {
                             console.log('Error: cannot get file list!')
                             this.fileList = []
@@ -100,8 +138,6 @@
                 this.addClass = true;
             },
             add_new_class () {
-                var axios = require('axios')
-                var qs = require('qs')
                 axios.post('/api/add_classification',
                            qs.stringify({ username: this.userId,
                                           father_name: this.direc.join('.'),
@@ -121,11 +157,9 @@
                 this.addFile = true;
             },
             add_new_file () {
-                var axios = require('axios')
-                var qs = require('qs')
                 axios.post('/api/add_paper',
                            qs.stringify({username: this.userId,
-                                         fitle: this.newFileTitle,
+                                         title: this.newFileTitle,
                                          url: this.newUrl,
                                          file_path: this.direc.join('/'),
                                          node_name: this.direc[this.direc.length - 1]})
@@ -139,6 +173,20 @@
                         }
                     })
 
+            },
+            view_file (row) {
+                var row_title = row["paper_title"];
+                axios.post('/api/show_paper_detail',
+                           qs.stringify({title: row_title,
+                                         username: this.userId})
+                          )
+                    .then((response) => {
+                        if (response["error_num"] == 0) {
+                            this.fileInfo = response;
+                        } else {
+                            console.log(response["msg"]);
+                        }
+                    })
             }
         },
         mounted: function() {

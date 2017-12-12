@@ -23,7 +23,7 @@ export default new Router(
                 component: index,
                 children: [
                     {
-                        path: 'showPdf/:code',
+                        path: 'showPdf/:hash_code',
                         name: 'showPdf',
                         component: showPdf
                     },
@@ -33,7 +33,7 @@ export default new Router(
                         component: tagTree
                     },
                     {
-                        path: 'fileInfo',
+                        path: 'fileInfo/:hash_code',
                         name: 'fileInfo',
                         component: fileInfo
                     }

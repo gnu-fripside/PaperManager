@@ -180,13 +180,13 @@ def update_read_status(request):
     :return: response
     """
     username = request.GET.get("username")
-    paper_title = request.GET.get("paper_title")
-    paper = Paper.objects.filter(username=username, paper_title=paper_title)[0]
+    hash_code = request.GET.get("hash_code")
+    paper = Paper.objects.filter(username=username, hash_code=hash_code)[0]
     paper.read_status = request.GET.get("read_status")
     paper.save()
     response = {"error_num": 0, "msg": "success"}
-    Log.objects.create(username=username, paper_title=paper_title,
-                       log="update the read_status of " + paper_title)
+    Log.objects.create(username=username, paper_title=paper.title,
+                       log="update the read_status of " + paper.title)
     return JsonResponse(response)
 
 
@@ -198,23 +198,24 @@ def save_note(request):
     """
     response = {}
     username = request.POST["username"]
-    paper_title = request.POST["paper_title"]
+    hash_code = request.POST["hash_code"]
     paper_page = request.POST["paper_page"]
     note_content = request.POST["content"]
-    exist = Note.objects.filter(username=username, paper_title=paper_title, paper_page=paper_page)
+    paper = Paper.objects.filter(username=username, hash_code=hash_code)[0]
+    exist = Note.objects.filter(username=username, hash_code=hash_code, paper_page=paper_page)
     if exist:
         exist[0].delete()
         response["msg"] = "change note successfully"
     else:
         response["msg"] = "add note successfully"
     note = Note.objects.create(username=username,
-                               paper_title=paper_title,
+                               paper_title=paper.title,
                                paper_page=paper_page,
                                content=note_content)
     response["error_num"] = 0
     res = JsonResponse(response)
-    Log.objects.create(username=username, paper_title=paper_title,
-                       log="add note in"+paper_title+" page"+paper_page)
+    Log.objects.create(username=username, paper_title=paper.title,
+                       log="add note in "+paper.title+" page"+paper_page)
     return res
 
 
@@ -253,15 +254,21 @@ def read_paper(request):
     for note_ex in notes.all():
         tmp = {"page": note_ex.paper_page, "content": note_ex.content}
         note.append(tmp)
-    with open(os.path.join(paper.file_path, paper.hash_code+".pdf"), "rb") as f:
-        paper_context = f.read()
-    response["paper_context"] = paper_context
+    # with open(os.path.join(paper.file_path, paper.hash_code+".pdf"), "rb") as f:
+    #     paper_context = f.read()
+    # response["paper_context"] = paper_context
     response["note"] = note
     response["read_status"] = paper.read_status
     res = JsonResponse(response)
     Log.objects.create(username=username, paper_title=paper.title,
                        log="read paper "+paper.title)
     return res
+
+def get_paper(request):
+    username = request.GET.get("username")
+    hash_code = request.GET.get("hash_code")
+    paper = Paper.objects.filter(username=username, hash_code=hash_code)[0]
+    return FileResponse(open(os.path.join(paper.file_path, paper.hash_code+".pdf"), "rb").read())
 
 
 def show_paper_of_the_node(request):
