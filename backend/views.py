@@ -84,6 +84,7 @@ def add_classification(request):
     response = {}
     username = request.POST["username"]
     father_name = request.POST["father_name"]
+    father_name = str(father_name).split(".")[-1]
     new_name = request.POST["name"]
     father = ClassificationTree.objects.filter(username=username, name=father_name)
     exist = ClassificationTree.objects.filter(username=username, name=new_name)
@@ -338,8 +339,10 @@ def find_son_node(username, node):
         son = []
         for son_node_ex in son_node.all():
             son_node_ex = son_node_ex.name
-            tmp = {"value": son_node_ex, "label": son_node_ex, "children": []}
-            tmp["children"] = find_son_node(username, tmp["label"])
+            tmp = {"value": son_node_ex, "label": son_node_ex}
+            children = find_son_node(username, tmp["label"])
+            if children:
+                tmp["children"] = children
             son.append(tmp)
         return son
     else:
@@ -357,7 +360,11 @@ def show_classification_tree(request):
     print(username)
     user = Users.objects.get(username=username)
     root = user.classification_tree_root
-    node = {"value": root, "label": root, "children": find_son_node(username, root)}
+    children = find_son_node(username, root)
+    if children:
+        node = {"value": root, "label": root, "children": find_son_node(username, root)}
+    else :
+        node = {"value": root, "label": root}
     response = {"node": [node]}
     res = JsonResponse(response)
     return res
