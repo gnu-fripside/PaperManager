@@ -10,9 +10,10 @@ urlpatterns = [
     url(r'^update_read_status$', views.update_read_status),
     url(r'^save_note$', views.save_note),
     url(r'^show_paper_detail$', views.show_paper_detail),
-    url(r'^show_paper$', views.read_paper),
+    url(r'^read_paper$', views.read_paper),
     url(r'^show_paper_of_the_node$', views.show_paper_of_the_node),
     url(r'^show_classification_tree$', views.show_classification_tree),
     url(r'^SubTreePaperPack$', views.SubTreePaperPack),
     url(r'^paper_node_pack$', views.paper_node_pack),
+    url(r'^get_paper$', views.get_paper)
 ]

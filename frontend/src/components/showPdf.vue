@@ -37,7 +37,7 @@
             <el-col :span="7">
               <el-tabs type="border-card">
                 <el-tab-pane label="Editer">
-                  <textarea :value="content" @input="update" cols="44" rows="40"></textarea>
+                  <textarea :value="content" @input="changeContent" cols="44" rows="40"></textarea>
                   <br>
                   <el-button :value="submit" @click="submitNote">Submit note</el-button>
                 </el-tab-pane>
@@ -62,12 +62,15 @@ export default {
     data () {
         return {
             radio: "0",
-            src:'https://arxiv.org/pdf/1604.02135.pdf',
+            src:"",
             loadedRatio: 0,
             page: 1,
             numPages: 0,
             rotate: 0,
-            note: [],
+            note: [ {
+                page: 1,
+                content: ""
+            }],
             content: "",
             read_status: 0,
         }
@@ -75,32 +78,33 @@ export default {
     computed: {
         compiledMarkdown: function () {
             var marked = require('marked');
-            return marked(this.input, { sanitize: true});
+            return marked(this.content, { sanitize: true});
         }
     },
     methods: {
+        exportFile () {},
+
         password: function(updatePassword, reason) {
             updatePassword(prompt('password is "test"'));
         },
         error: function(err) {
             console.log(err);
         },
-        update: function (e) {
-            this.input = e.target.value;
+        changeContent: function (e) {
+            this.content = e.target.value;
         },
-        exportFile: {},
 
         upPage () {
             if (this.page < this.numPages) {
                 this.page = this.page + 1;
-                this.content = this.note[this.page - 1].content;
+                this.content = this.note[this.page].content;
             }
         },
 
         downPage () {
             if (this.page > 1) {
                 this.page = this.page - 1;
-                this.content = this.note[this.page - 1].content;
+                this.content = this.note[this.page].content;
             }
         },
         submitNote () {
@@ -109,11 +113,15 @@ export default {
             axios.post('/api/save_note',
                        qs.stringify({ username: this.$route.params.name,
                                       hash_code: this.$route.params.hash_code,
-                                      paper_page: this.$route.params.paper_page})
+                                      paper_page: this.page,
+                                      content: this.content})
                       )
                 .then((response) => {
-                    if (response["error_num"] > 0)
+                    if (response.data["error_num"] > 0) {
                         console.log(response["msg"]);
+                    } else {
+                        this.note[this.page].content = this.content;
+                    }
                 })
         },
 
@@ -125,14 +133,22 @@ export default {
                                       hash_code: this.$route.params.hash_code })
                       )
                 .then((response) => {
-                    var gnote = response["note"];
+                    var gnote = response.data["note"];
                     gnote.sort(function(a, b) {
-                        return (a["page"] - b["page"]);
+                       return (a["page"] - b["page"]);
                     });
                     this.note = gnote;
+                    this.content = gnote[1].content;
                     this.read_status = response["read_status"];
+                    //console.log(this.note);
                 });
         },
+
+        initia () {
+            this.read_paper();
+            console.log(this.note);
+        },
+
         update_read_status () {
             this.$http.get('/api/update_read_status?username='
                            + this.$route.params.name
@@ -143,24 +159,17 @@ export default {
                 .then((response) => {
                     if (response["error_num"] > 0)
                         console.log(response["msg"]);
-                })
+                });
         }
 
     },
     mounted: function() {
-      //这个是钩子函数
-      //如果cartView函数要执行，必须先执行钩子函数
-      //这个钩子函数完成了对cratView函数的调用
-      //应该注意的是，使用mounted 并不能保证钩子函数中
-      // 的 this.$el 在 document 中。为此还应该引入
-      // Vue.nextTick/vm.$nextTick
-      this.$nextTick(function () {
-          this.src = "http://127.0.0.1:8080/api/get_paper/?username="
-              + this.$route.params.name
-              + "&hash_code="
-              + this.$route.params.hash_code;
-          read_paper();
-          content = note[0].content;
+        this.$nextTick(function () {
+          this.src = ( "http://127.0.0.1:8080/api/get_paper?username="
+                       + this.$route.params.name
+                       + "&hash_code="
+                       + this.$route.params.hash_code);
+            this.initia();
       })
     }
 }

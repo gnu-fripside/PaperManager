@@ -11,6 +11,7 @@
         v-model="direc"
         change-on-select="true">
       </el-cascader>
+      <el-button @click=showFiles> Show </el-button>
     </div>
     <div>
       Current Class: {{ direc.join(': ') }}
@@ -44,6 +45,10 @@
       @click=add_new_file>
       +
     </el-button>
+    
+    <div>
+      added url: {{newFileUrl}}
+    </div>
     </a>
 
     <el-row :span="20">
@@ -69,8 +74,11 @@
               </el-button>
             </template>
           </el-table-column>
-        </el-table>
-      </el-col>
+    </el-table>
+        
+    </el-col>
+
+      
 
       <el-col :span="10">
         <el-dialog>Detail:</el-dialog>
@@ -126,7 +134,7 @@ export default {
                     })
             },
             showFiles () {
-                axios.post('/api/show_paper_of_the_node?username=',
+                axios.post('/api/show_paper_of_the_node',
                            qs.stringify({ username: this.userId,
                                           classification_node: this.direc[this.direc.length - 1]})
                           )
@@ -167,13 +175,13 @@ export default {
                 axios.post('/api/add_paper',
                            qs.stringify({username: this.userId,
                                          title: this.newFileTitle,
-                                         url: this.newUrl,
+                                         links: this.newFileUrl,
                                          file_path: this.direc.join('/'),
                                          node_name: this.direc[this.direc.length - 1]})
                           )
                     .then((response) => {
                         if (response.data["error_num"] == 0) {
-                            this.showFile();
+                            this.showFiles();
                             this.addFile = false;
                         } else {
                             console.log(response.data["msg"]);
@@ -184,7 +192,8 @@ export default {
             view_file (row) {
                 var row_title = row["paper_title"];
                 axios.post('/api/show_paper_detail',
-                           qs.stringify({title: row_title,
+                           qs.stringify({title: row.title,
+                                         hash_code: row.hash_code,
                                          username: this.userId})
                           )
                     .then((response) => {

@@ -1,4 +1,4 @@
-from django.http import JsonResponse
+from django.http import JsonResponse, FileResponse, StreamingHttpResponse
 from django.core import serializers
 from django.contrib.auth import authenticate, login, logout
 from .utils import util
@@ -29,6 +29,7 @@ def user_register(request):
         user = Users.objects.create(username=username, password=password,
                                     email=email,
                                     classification_tree_root='root')
+        ClassificationTree.objects.create(username=username, name="root")
         response['error_num'] = 0
         response['msg'] = 'success'
     return JsonResponse(response)
@@ -114,7 +115,7 @@ def add_paper(request):
     # authors = request.POST["author"]
     # publish_time = request.POST["publish_time"]
     # source = request.POST["source"]
-    url = request.POST["url"]
+    url = request.POST["links"]
     file_path = "resource/tags/"+username+"/"+request.POST["file_path"]
     hash_code = paperDown(url, file_path)
     node_name = request.POST["node_name"]
@@ -122,6 +123,10 @@ def add_paper(request):
                                  url=url, hash_code=hash_code,
                                  file_path=file_path,
                                  classification_tree_node=node_name)
+    for i in range(100):
+        Note.objects.create(username=username, paper_title=title, paper_page=i, content="")
+    note = Note.objects.filter(username=username, paper_title=title)
+    print(note[0])
     """
     for au in authors:
         author = Author.objects.filter(first_name=au["first_name"],
@@ -202,7 +207,7 @@ def save_note(request):
     paper_page = request.POST["paper_page"]
     note_content = request.POST["content"]
     paper = Paper.objects.filter(username=username, hash_code=hash_code)[0]
-    exist = Note.objects.filter(username=username, hash_code=hash_code, paper_page=paper_page)
+    exist = Note.objects.filter(username=username, paper_title=paper.title, paper_page=paper_page)
     if exist:
         exist[0].delete()
         response["msg"] = "change note successfully"
@@ -234,10 +239,11 @@ def show_paper_detail(request):
     response["source"] = paper[0].source
     response["url"] = paper[0].url
     response["read_status"] = paper[0].read_status
+    response["hash_code"] = paper[0].hash_code
     res = JsonResponse(response)
     return res
 
-
+@csrf_exempt
 def read_paper(request):
     """
     read the paper
@@ -245,10 +251,11 @@ def read_paper(request):
     :return: response
     """
     response = {}
-    username = request.GET.get("username")
-    hash_code = request.GET.get("hash_code")
+    username = request.POST["username"]
+    hash_code = request.POST["hash_code"]
     paper = Paper.objects.filter(username=username, hash_code=hash_code)[0]
     notes = Note.objects.filter(username=username, paper_title=paper.title)
+    print(notes[0])
     note = []
     for note_ex in notes.all():
         tmp = {"page": note_ex.paper_page, "content": note_ex.content}
@@ -267,7 +274,23 @@ def get_paper(request):
     username = request.GET.get("username")
     hash_code = request.GET.get("hash_code")
     paper = Paper.objects.filter(username=username, hash_code=hash_code)[0]
-    return FileResponse(open(os.path.join(paper.file_path, paper.hash_code+".pdf"), "rb").read())
+    the_file_name = os.path.join(paper.file_path, paper.hash_code+".pdf")
+    
+    def file_iterator(file_name, chunk_size=512):
+        with open(file_name, 'rb') as f:
+            while True:
+                c = f.read()
+                if c:
+                    yield c
+                else:
+                    break
+    
+    response = StreamingHttpResponse(file_iterator(the_file_name))
+    response['Content-Type'] = 'application/octet-stream'
+    response['Content-Disposition'] = 'attachment;filename="{0}"'.format(the_file_name)
+ 
+    return response
+
 
 @csrf_exempt 
 def show_paper_of_the_node(request):
@@ -286,6 +309,7 @@ def show_paper_of_the_node(request):
         tmp = {"paper_title": paper.title, "hash_code": paper.hash_code}
         papers_title.append(tmp)
     response["papers_title"] = papers_title
+    response["error_num"]=0
     res = JsonResponse(response)
     return res
 
