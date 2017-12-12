@@ -1,19 +1,15 @@
 <template>
     <div class="fileInfo">
     <el-form :model="Paper" :rules="rules" ref="Paper" label-width="100px" class="paperInfo">
-      <!-- <el-form-item label="Class" prop="class">
-        <el-cascader
-          :options="classTree"
-          v-model="classes"
-          @change="changeClass">
-        </el-cascader>
-      </el-form-item> -->
-      <el-form-item label="Title" prop="title">
+      <!--<el-form-item label="Title" prop="title">
         <el-input
           :placeholder="Paper.title"
+          
           v-model="Paper.title">
         </el-input>
-      </el-form-item>
+      </el-form-item> -->
+      <h2>Title: {{Paper.title}} </h2>
+      <br>
       Author:
       <el-row v-for="author in Paper.author">
         <el-col :span="6">

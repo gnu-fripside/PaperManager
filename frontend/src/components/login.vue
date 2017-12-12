@@ -48,7 +48,7 @@
               let expireDays = 1000 * 60 * 60 * 24 * 30;
               // this.setCookie('username', this.form.username, expireDays);
               // this.setCookie('session', response.data.session, expireDays);
-              this.$router.push({name: 'index', params: {name: this.form.username}});
+              this.$router.push({name: 'tagTree', params: {name: this.form.username}});
             } else {
               this.status = res['msg']
               alert(res['msg'])
