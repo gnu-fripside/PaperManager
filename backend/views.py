@@ -1,3 +1,4 @@
+#encoding:utf-8
 from django.http import JsonResponse, FileResponse, StreamingHttpResponse
 from django.core import serializers
 from django.contrib.auth import authenticate, login, logout

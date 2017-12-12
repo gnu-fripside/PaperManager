@@ -1,3 +1,4 @@
+#encoding:utf-8
 from pdfminer.pdfparser import PDFParser
 from pdfminer.pdfparser import PDFDocument
 from pdfminer.pdfinterp import PDFTextExtractionNotAllowed
