@@ -11,6 +11,23 @@
     npm run build
 </code></pre>
 
+- for MySQL users, you should do this thing, set the MySQL default charset to UTF-8 as follows in my.cnf
+
+<pre><code>
+!includedir /etc/mysql/conf.d/
+!includedir /etc/mysql/mysql.conf.d/
+[client]
+default-character-set = utf8
+[mysql]
+default-character-set = utf8
+[mysqld]
+default-storage-engine=INNODB
+character-set-server=utf8
+collation-server=utf8_general_ci
+</code></pre>
+
+- Set the link in exportSrc function in showPdf.vue
+
 - Goto previous path (PaperManager/) and start Django.
 
 <pre><code>
