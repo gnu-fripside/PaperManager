@@ -33,7 +33,11 @@
 - Share Module
 - New UI(Element-UI supported)
 - Optimizing Tag Tree display
-### DOING
 - Writing Documentation
 - Optimizing Web Page Design
 - Final Test
+### TODO
+- A huge update with a lot of extensions of this website.
+- Details can not be released right now.
+- But I'm sure that new version will be extremely exciting. 
+
